@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+.font-display { font-family: 'IBM Plex Sans Arabic', sans-serif; font-weight: 800; }
+.lift { transition: transform .2s ease, box-shadow .2s ease; }
+.lift:hover { transform: translateY(-3px); box-shadow: 0 14px 26px -16px rgba(12,28,119,0.3); }
+
+@keyframes spin360 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.petal-spin { animation: spin360 14s linear infinite; }
+
+@keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.ticker-track { animation: ticker 22s linear infinite; }
+
+.hero-fade { transition: opacity .7s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lift, .petal-spin, .ticker-track, .hero-fade { animation: none !important; transition: none !important; }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #00C6C755; border-radius: 999px; }

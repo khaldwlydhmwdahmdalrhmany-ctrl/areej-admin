@@ -1,0 +1,124 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+const C = { navy: "#0C1C77", line: "#E1ECE8", slate: "#5C6B72" };
+
+export default function BannerForm({ initial, bannerId }) {
+  const router = useRouter();
+  const [categories, setCategories] = useState([]);
+  const [form, setForm] = useState(
+    initial || { title: "", subtitle: "", placement: "home", categoryId: "", imageUrl: "", sortOrder: 0, active: true }
+  );
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/categories").then((r) => r.json()).then(setCategories);
+  }, []);
+
+  const set = (key) => (e) => {
+    const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    setForm((f) => ({ ...f, [key]: val }));
+  };
+
+  const uploadImage = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setError("");
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    setUploading(false);
+    if (!res.ok) { setError(data.error || "فشل رفع الصورة"); return; }
+    setForm((f) => ({ ...f, imageUrl: data.url }));
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!form.title.trim()) { setError("عنوان البنر مطلوب"); return; }
+    if (form.placement === "category" && !form.categoryId) { setError("اختر التصنيف اللي بيظهر فيه البنر"); return; }
+
+    const selectedCat = categories.find((c) => c.id === form.categoryId);
+    const payload = { ...form, linkCategorySlug: selectedCat ? selectedCat.slug : null };
+
+    setSaving(true);
+    const url = bannerId ? `/api/banners/${bannerId}` : "/api/banners";
+    const method = bannerId ? "PUT" : "POST";
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    setSaving(false);
+    if (res.ok) {
+      router.push("/admin/banners");
+      router.refresh();
+    } else {
+      const data = await res.json();
+      setError(data.error || "حدث خطأ أثناء الحفظ");
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="flex flex-col gap-4 max-w-xl">
+      <div>
+        <label className="text-xs font-bold" style={{ color: C.navy }}>عنوان البنر</label>
+        <input value={form.title} onChange={set("title")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold" style={{ color: C.navy }}>نص فرعي (اختياري)</label>
+        <input value={form.subtitle || ""} onChange={set("subtitle")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+      </div>
+
+      <div>
+        <label className="text-xs font-bold" style={{ color: C.navy }}>مكان الظهور</label>
+        <select value={form.placement} onChange={set("placement")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none bg-white" style={{ border: `1.5px solid ${C.line}` }}>
+          <option value="home">الصفحة الرئيسية</option>
+          <option value="category">صفحة تصنيف محدد</option>
+        </select>
+      </div>
+
+      <div>
+        <label className="text-xs font-bold" style={{ color: C.navy }}>
+          التصنيف {form.placement === "home" ? "(اختياري — وجهة النقر عند الضغط على البنر)" : "(الصفحة اللي بيظهر فيها البنر)"}
+        </label>
+        <select value={form.categoryId || ""} onChange={set("categoryId")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none bg-white" style={{ border: `1.5px solid ${C.line}` }}>
+          <option value="">— بدون —</option>
+          {categories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
+        </select>
+      </div>
+
+      <div>
+        <label className="text-xs font-bold" style={{ color: C.navy }}>صورة البنر</label>
+        <div className="flex items-center gap-3 mt-1">
+          {form.imageUrl && <img src={form.imageUrl} alt="" className="w-24 h-14 rounded-lg object-cover" style={{ border: `1px solid ${C.line}` }} />}
+          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadImage} className="text-sm" />
+        </div>
+        {uploading && <p className="text-xs mt-1" style={{ color: C.slate }}>جاري رفع الصورة...</p>}
+        <p className="text-xs mt-1" style={{ color: C.slate }}>بدون صورة، سيظهر البنر بتدرج لوني بسيط بدلها.</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs font-bold" style={{ color: C.navy }}>ترتيب الظهور</label>
+          <input type="number" value={form.sortOrder ?? 0} onChange={set("sortOrder")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        </div>
+        <label className="flex items-center gap-2 text-sm font-bold mt-6" style={{ color: C.navy }}>
+          <input type="checkbox" checked={form.active !== false} onChange={set("active")} /> نشط (يظهر للزوار)
+        </label>
+      </div>
+
+      {error && <p className="text-sm" style={{ color: "#c05050" }}>{error}</p>}
+
+      <button type="submit" disabled={saving} className="w-full py-3 rounded-full font-bold text-sm" style={{ background: C.navy, color: "#fff" }}>
+        {saving ? "جاري الحفظ..." : bannerId ? "حفظ التعديلات" : "إضافة البنر"}
+      </button>
+    </form>
+  );
+}
