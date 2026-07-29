@@ -24,9 +24,10 @@ export async function POST(request) {
     const ext = file.name.split(".").pop();
     const fileName = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}.${ext}`;
 
-    const blob = await put(fileName, file, {
-      access: "private",
-    });
+  const blob = await put(fileName, file, {
+  access: "public",
+  storeId: process.env.PUBLIC_BLOB_STORE_ID,
+});
 
     return NextResponse.json({
       url: blob.url,
