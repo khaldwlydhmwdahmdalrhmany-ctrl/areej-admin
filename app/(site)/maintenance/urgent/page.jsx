@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Siren, MessageCircle } from "lucide-react";
 import { C, buildWhatsAppLink } from "../../../../lib/colors.js";
-import CategoryBanner from "../../../../components/site/CategoryBanner.jsx";
+import PageHero from "../../../../components/site/PageHero.jsx";
 
 export default function UrgentMaintenancePage() {
   const [form, setForm] = useState({ name: "", phone: "", city: "", device: "", issue: "" });
@@ -23,9 +23,15 @@ export default function UrgentMaintenancePage() {
 
   return (
     <div>
-      <CategoryBanner title="طلب صيانة عاجلة" subtitle="فريقنا الفني يتواصل معك خلال أقصر وقت ممكن" icon="Wrench" color="#B23A3A" />
+      <PageHero
+        title="طلب صيانة عاجلة"
+        subtitle="عطل مفاجئ لا يحتمل الانتظار؟ عبّئ النموذج ويتواصل معك فني خلال دقائق."
+        icon="Wrench"
+        color={C.danger}
+        compact
+      />
 
-      <section className="max-w-2xl mx-auto px-4 sm:px-6 py-14">
+      <section className="max-w-2xl mx-auto px-4 sm:px-6 section-y">
         <div className="rounded-2xl p-6 flex flex-col gap-4" style={{ background: "#fff", border: `1px solid ${C.line}` }}>
           <p className="text-sm" style={{ color: C.slate }}>
             عبّئ البيانات التالية وسيتم تجهيز رسالة تلقائية وتحويلك لواتساب لإرسالها مباشرة لفريق الصيانة.

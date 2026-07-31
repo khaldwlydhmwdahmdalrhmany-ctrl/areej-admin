@@ -2,7 +2,9 @@ import React from "react";
 import Link from "next/link";
 import { Wrench, CheckCircle2, AlertTriangle } from "lucide-react";
 import { C } from "../../../lib/colors.js";
-import CategoryBanner from "../../../components/site/CategoryBanner.jsx";
+import PageHero from "../../../components/site/PageHero.jsx";
+import TrustStrip from "../../../components/site/TrustStrip.jsx";
+import CtaBand from "../../../components/site/CtaBand.jsx";
 import MaintenanceCTA from "../../../components/site/MaintenanceCTA.jsx";
 
 const PLANS = [
@@ -17,9 +19,18 @@ const PLANS = [
 export default function MaintenancePage() {
   return (
     <div>
-      <CategoryBanner title="الصيانة الدورية" subtitle="حافظ على أداء جهازك ونقاء مياهك على مدار العام" icon="Wrench" color={C.teal} />
+      <PageHero
+        title="الصيانة الدورية"
+        subtitle="أغلب أعطال أجهزة التحلية سببها فلتر لم يُستبدل في وقته. باقاتنا تتابع جهازك وتذكّرك قبل أن يتعطل."
+        icon="Wrench"
+        color={C.teal}
+        cta={{ label: "طلب صيانة عاجلة", href: "/maintenance/urgent" }}
+        whatsapp="السلام عليكم، أرغب في الاستفسار عن باقات الصيانة الدورية."
+      />
 
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+      <TrustStrip />
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 section-y">
         <div className="grid sm:grid-cols-3 gap-5 mb-12">
           {PLANS.map((p) => (
             <div key={p.id} className="p-6 rounded-2xl flex flex-col gap-4" style={{ background: "#fff", border: `1px solid ${C.line}` }}>
@@ -50,6 +61,14 @@ export default function MaintenancePage() {
           </Link>
         </div>
       </section>
+    <CtaBand
+        eyebrow="اشترك مرة وارتَح"
+        title="جهازك يستحق متابعة منتظمة"
+        desc="نذكّرك قبل موعد كل صيانة، ونأتيك بقطع أصلية — بلا اتصالات متكررة منك."
+        primaryLabel="طلب صيانة عاجلة"
+        primaryHref="/maintenance/urgent"
+        whatsappMessage="السلام عليكم، أرغب في الاشتراك بباقة صيانة دورية."
+      />
     </div>
   );
 }

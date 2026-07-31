@@ -11,6 +11,7 @@ export default function ProductForm({ initial, productId }) {
     initial || {
       name: "", description: "", fullDescription: "", price: "", oldPrice: "",
       badge: "", imageUrl: "", freeShipping: false, freeInstall: false, categoryId: "",
+      brand: "", stock: "in_stock", rating: "", reviewCount: "",
     }
   );
   const [uploading, setUploading] = useState(false);
@@ -56,7 +57,13 @@ export default function ProductForm({ initial, productId }) {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, oldPrice: form.oldPrice === "" ? null : form.oldPrice }),
+      body: JSON.stringify({
+        ...form,
+        oldPrice: form.oldPrice === "" ? null : form.oldPrice,
+        rating: form.rating === "" ? null : form.rating,
+        reviewCount: form.reviewCount === "" ? null : form.reviewCount,
+        brand: form.brand?.trim() || null,
+      }),
     });
     setSaving(false);
     if (res.ok) {
@@ -106,6 +113,67 @@ export default function ProductForm({ initial, productId }) {
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>شارة المنتج (اختياري، مثل: جديد / عرض)</label>
         <input value={form.badge} onChange={set("badge")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs font-bold" style={{ color: C.navy }}>الماركة (اختياري)</label>
+          <input
+            value={form.brand || ""}
+            onChange={set("brand")}
+            placeholder="مثال: GuldenPRO"
+            className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none"
+            style={{ border: `1.5px solid ${C.line}` }}
+          />
+          <p className="text-[11px] mt-1" style={{ color: C.slate }}>تظهر كخيار في فلتر الماركات بالمتجر.</p>
+        </div>
+        <div>
+          <label className="text-xs font-bold" style={{ color: C.navy }}>حالة التوفر</label>
+          <select
+            value={form.stock || "in_stock"}
+            onChange={set("stock")}
+            className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none bg-white"
+            style={{ border: `1.5px solid ${C.line}` }}
+          >
+            <option value="in_stock">متوفر</option>
+            <option value="low_stock">كمية محدودة</option>
+            <option value="out_of_stock">غير متوفر حاليًا</option>
+            <option value="preorder">حجز مسبق</option>
+          </select>
+          <p className="text-[11px] mt-1" style={{ color: C.slate }}>«غير متوفر» يعطّل أزرار الشراء تلقائيًا.</p>
+        </div>
+      </div>
+
+      <div className="p-4 rounded-xl" style={{ background: "#FFF8E7", border: "1px solid #F2B01E44" }}>
+        <p className="text-xs font-bold mb-1" style={{ color: "#8A6200" }}>التقييمات — أدخل أرقامًا حقيقية فقط</p>
+        <p className="text-[11px] leading-relaxed mb-3" style={{ color: "#8A6200" }}>
+          اتركهما فارغين إن لم توجد تقييمات فعلية؛ عندها لا تظهر أي نجوم في المتجر.
+          نشر تقييمات غير حقيقية مخالف لنظام التجارة الإلكترونية السعودي وقد يعاقب عليه محرك البحث.
+        </p>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs font-bold" style={{ color: C.navy }}>متوسط التقييم (1–5)</label>
+            <input
+              type="number" step="0.1" min="1" max="5"
+              value={form.rating ?? ""}
+              onChange={set("rating")}
+              placeholder="فارغ = بلا تقييم"
+              className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none"
+              style={{ border: `1.5px solid ${C.line}` }}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold" style={{ color: C.navy }}>عدد التقييمات</label>
+            <input
+              type="number" min="0"
+              value={form.reviewCount ?? ""}
+              onChange={set("reviewCount")}
+              placeholder="فارغ = بلا تقييم"
+              className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none"
+              style={{ border: `1.5px solid ${C.line}` }}
+            />
+          </div>
+        </div>
       </div>
 
       <div>

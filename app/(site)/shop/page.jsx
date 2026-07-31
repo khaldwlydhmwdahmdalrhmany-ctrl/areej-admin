@@ -1,20 +1,47 @@
 import React from "react";
-import { getCategories, getProducts } from "../../../lib/db.js";
+import { getCategories, getProducts, getBanners } from "../../../lib/db.js";
 import { C } from "../../../lib/colors.js";
-import CategoryBanner from "../../../components/site/CategoryBanner.jsx";
+import PageHero from "../../../components/site/PageHero.jsx";
+import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import ProductBrowser from "../../../components/site/ProductBrowser.jsx";
-import { Package } from "lucide-react";
+import CtaBand from "../../../components/site/CtaBand.jsx";
 
 export const dynamic = "force-dynamic";
 
 export default async function ShopPage() {
-  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+  const [categories, products, banners] = await Promise.all([
+    getCategories(),
+    getProducts(),
+    getBanners({ placement: "home" }),
+  ]);
+
+  // أول بنر رئيسي نشط يصلح ترويسة لصفحة المتجر
+  const heroBanner = banners.find((b) => b.active && b.imageUrl);
+
   return (
     <div>
-      <CategoryBanner title="كل المنتجات" subtitle="تصفّح كامل تشكيلة أريج النقاء" color={C.navy} count={products.length} />
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+      <PageHero
+        title="كل المنتجات"
+        subtitle="تصفّح كامل تشكيلة أريج النقاء — من الفلتر المنزلي إلى محطات التحلية الصناعية."
+        imageUrl={heroBanner?.imageUrl}
+        icon="Package"
+        color={C.navy}
+        count={products.length}
+      />
+
+      <TrustStrip />
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 section-y">
         <ProductBrowser categories={categories} products={products} activeCatSlug={null} />
       </section>
+
+      <CtaBand
+        eyebrow="محتار في الاختيار؟"
+        title="نرشّح لك الجهاز المناسب"
+        desc="أرسل لنا عدد أفراد أسرتك ونوع مياه منطقتك، ونختار لك ما يناسبك فعلًا."
+        primaryLabel="تصفّح العروض"
+        primaryHref="/offers"
+      />
     </div>
   );
 }

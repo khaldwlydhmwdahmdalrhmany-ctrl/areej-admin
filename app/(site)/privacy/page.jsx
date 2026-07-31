@@ -1,7 +1,7 @@
 import React from "react";
 import { ShieldCheck } from "lucide-react";
 import { C } from "../../../lib/colors.js";
-import CategoryBanner from "../../../components/site/CategoryBanner.jsx";
+import PageHero from "../../../components/site/PageHero.jsx";
 
 const SECTIONS = [
   { t: "المعلومات التي نجمعها", d: "نجمع البيانات التي تزودنا بها مباشرة عند إتمام الطلب أو التواصل معنا، مثل الاسم ورقم الجوال والمدينة/العنوان، وذلك فقط لغرض تنفيذ الطلب والتواصل بشأنه." },
@@ -15,7 +15,13 @@ const SECTIONS = [
 export default function PrivacyPage() {
   return (
     <div>
-      <CategoryBanner title="سياسة الخصوصية" subtitle="كيف نتعامل مع بياناتك ونحافظ على خصوصيتك" icon="ShieldCheck" color={C.navy} />
+      <PageHero
+        title="سياسة الخصوصية"
+        subtitle="كيف نجمع بياناتك ونستخدمها ونحميها."
+        icon="Lock"
+        color={C.navy}
+        compact
+      />
       <section className="max-w-3xl mx-auto px-4 sm:px-6 py-14 flex flex-col gap-8">
         <p className="text-sm leading-relaxed" style={{ color: C.slate }}>
           نحرص في أريج النقاء على خصوصية عملائنا، وتوضح هذه الصفحة طبيعة البيانات التي نجمعها وكيفية استخدامها وحمايتها.

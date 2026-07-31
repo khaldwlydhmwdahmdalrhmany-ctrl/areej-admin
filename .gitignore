@@ -1,2 +1,34 @@
-node_modules
-node_modules
+# التبعيات
+node_modules/
+.pnp
+.pnp.js
+
+# مخرجات البناء
+.next/
+out/
+build/
+dist/
+
+# قاعدة البيانات المحلية (SQLite للتطوير فقط)
+data/
+*.db
+*.db-journal
+
+# متغيرات البيئة — لا تُرفع أبدًا لمستودع عام
+.env
+.env.local
+.env*.local
+
+# رفع الصور محليًا
+public/uploads/
+
+# نظام التشغيل والمحررات
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# السجلات
+*.log
+npm-debug.log*
+.vercel
