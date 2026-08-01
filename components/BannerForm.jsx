@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { BANNER_PLACEMENTS, BANNER_RATIOS, getRatioCss } from "../lib/banners.js";
 
 const C = { navy: "#0C1C77", line: "#E1ECE8", slate: "#5C6B72" };
 
@@ -8,7 +9,10 @@ export default function BannerForm({ initial, bannerId }) {
   const router = useRouter();
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState(
-    initial || { title: "", subtitle: "", placement: "home", categoryId: "", imageUrl: "", sortOrder: 0, active: true }
+    initial || {
+      title: "", subtitle: "", placement: "home", categoryId: "", imageUrl: "",
+      sortOrder: 0, active: true, ratio: "auto", ctaLabel: "", ctaHref: "",
+    }
   );
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -79,11 +83,16 @@ export default function BannerForm({ initial, bannerId }) {
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>مكان الظهور</label>
         <select value={form.placement} onChange={set("placement")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none bg-white" style={{ border: `1.5px solid ${C.line}` }}>
-          <option value="home">الصفحة الرئيسية</option>
-          <option value="category">صفحة تصنيف محدد</option>
+          {BANNER_PLACEMENTS.map((p) => (
+            <option key={p.key} value={p.key}>{p.label}</option>
+          ))}
         </select>
+        <p className="text-xs mt-1" style={{ color: C.slate }}>
+          {BANNER_PLACEMENTS.find((p) => p.key === form.placement)?.note}
+        </p>
       </div>
 
+      {(form.placement === "home" || form.placement === "category") && (
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>
           التصنيف {form.placement === "home" ? "(اختياري — وجهة النقر عند الضغط على البنر)" : "(الصفحة اللي بيظهر فيها البنر)"}
@@ -93,6 +102,7 @@ export default function BannerForm({ initial, bannerId }) {
           {categories.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
         </select>
       </div>
+      )}
 
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>صورة البنر</label>
@@ -102,6 +112,49 @@ export default function BannerForm({ initial, bannerId }) {
         </div>
         {uploading && <p className="text-xs mt-1" style={{ color: C.slate }}>جاري رفع الصورة...</p>}
         <p className="text-xs mt-1" style={{ color: C.slate }}>بدون صورة، سيظهر البنر بتدرج لوني بسيط بدلها.</p>
+      </div>
+
+      <div>
+        <label className="text-xs font-bold" style={{ color: C.navy }}>مقاس عرض البنر</label>
+        <select value={form.ratio || "auto"} onChange={set("ratio")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none bg-white" style={{ border: `1.5px solid ${C.line}` }}>
+          {BANNER_RATIOS.map((r) => (
+            <option key={r.key} value={r.key}>{r.label} — {r.note}</option>
+          ))}
+        </select>
+        <p className="text-xs mt-1" style={{ color: C.slate }}>
+          {form.ratio === "auto" || !form.ratio
+            ? "الصورة تظهر كاملة بأبعادها الأصلية بلا أي قص — الأنسب للتصاميم الجاهزة."
+            : "سيُقصّ الفائض من الصورة لتناسب النسبة المختارة. اجعل المحتوى المهم في وسط الصورة."}
+        </p>
+
+        {form.imageUrl && (
+          <div className="mt-3">
+            <p className="text-xs font-bold mb-1.5" style={{ color: C.navy }}>معاينة كما ستظهر للزائر</p>
+            <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${C.line}`, background: "#071233" }}>
+              <img
+                src={form.imageUrl}
+                alt="معاينة"
+                className="w-full block"
+                style={
+                  getRatioCss(form.ratio)
+                    ? { aspectRatio: getRatioCss(form.ratio), objectFit: "cover", objectPosition: "center" }
+                    : { height: "auto", objectFit: "contain" }
+                }
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs font-bold" style={{ color: C.navy }}>نص زر البنر (اختياري)</label>
+          <input value={form.ctaLabel || ""} onChange={set("ctaLabel")} placeholder="مثال: تسوّق العرض" className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        </div>
+        <div>
+          <label className="text-xs font-bold" style={{ color: C.navy }}>رابط الزر</label>
+          <input value={form.ctaHref || ""} onChange={set("ctaHref")} placeholder="/offers" dir="ltr" className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none text-right" style={{ border: `1.5px solid ${C.line}` }} />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

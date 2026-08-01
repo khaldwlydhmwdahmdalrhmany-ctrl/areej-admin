@@ -12,6 +12,7 @@ import SectionHead from "../../components/site/SectionHead.jsx";
 import WhyUs from "../../components/site/WhyUs.jsx";
 import FaqAccordion from "../../components/site/FaqAccordion.jsx";
 import CtaBand from "../../components/site/CtaBand.jsx";
+import HowItWorks from "../../components/site/HowItWorks.jsx";
 
 export const dynamic = "force-dynamic";
 
@@ -145,6 +146,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* كيف تصلك منتجاتنا */}
+      <HowItWorks />
 
       {/* ٧ — الفلاتر والإكسسوارات */}
       {filtersAndAccessories.length > 0 && (

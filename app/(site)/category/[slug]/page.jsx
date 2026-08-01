@@ -2,6 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { getCategories, getProducts, getCategoryBySlug, getBanners } from "../../../../lib/db.js";
 import { C } from "../../../../lib/colors.js";
+import { pickBanner } from "../../../../lib/banners.js";
 import PageHero from "../../../../components/site/PageHero.jsx";
 import TrustStrip from "../../../../components/site/TrustStrip.jsx";
 import ProductBrowser from "../../../../components/site/ProductBrowser.jsx";
@@ -33,8 +34,9 @@ export default async function CategoryPage({ params }) {
   ]);
 
   const relevant = catBanners.filter((b) => b.active && b.categoryId === category.id);
-  // بنر التصنيف المخصص له الأولوية، ثم صورة البنر المرفوعة على التصنيف نفسه
-  const heroImage = category.bannerUrl || relevant.find((b) => b.imageUrl)?.imageUrl;
+  const pageBanner = pickBanner(catBanners, { categoryId: category.id });
+  // بنر التصنيف من لوحة البنرات له الأولوية، ثم الصورة المرفوعة على التصنيف نفسه
+  const heroImage = pageBanner?.imageUrl || category.bannerUrl;
 
   return (
     <div>
@@ -42,6 +44,8 @@ export default async function CategoryPage({ params }) {
         title={category.name}
         subtitle={category.tagline}
         imageUrl={heroImage}
+        ratio={pageBanner?.ratio}
+        bannerCta={pageBanner?.ctaHref ? { label: pageBanner.ctaLabel, href: pageBanner.ctaHref } : undefined}
         icon={category.icon}
         color={category.color || C.navy}
         count={products.length}

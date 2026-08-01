@@ -4,15 +4,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight, ChevronLeft, ArrowLeft } from "lucide-react";
 import { C } from "../../lib/colors.js";
+import { getRatioCss } from "../../lib/banners.js";
 import PetalLogo from "./PetalLogo.jsx";
 
 // بنر بصورة أو بدونها (متدرج لوني بديل)
-function BannerSlide({ banner }) {
+function BannerSlide({ banner, fit = "cover" }) {
   const href = banner.linkCategorySlug ? `/category/${banner.linkCategorySlug}` : "/shop";
   if (banner.imageUrl) {
     return (
       <Link href={href} className="absolute inset-0 w-full h-full block">
-        <img src={banner.imageUrl} alt={banner.title} className="w-full h-full object-cover" />
+        <img
+          src={banner.imageUrl}
+          alt={banner.title}
+          className="w-full h-full"
+          style={{ objectFit: fit, objectPosition: "center" }}
+        />
       </Link>
     );
   }
@@ -71,11 +77,15 @@ export default function HeroBanners({ banners }) {
   const next = () => setSlide((s) => (s + 1) % banners.length);
   const prev = () => setSlide((s) => (s - 1 + banners.length) % banners.length);
 
+  // النسبة تؤخذ من أول بنر؛ "auto" تعني احترام أبعاد الصورة الأصلية
+  const ratioCss = getRatioCss(banners[0]?.ratio) || "1774 / 887";
+  const fit = banners[0]?.ratio && banners[0].ratio !== "auto" ? "cover" : "contain";
+
   return (
-    <section className="relative w-full overflow-hidden" style={{ aspectRatio: "1774 / 887", background: C.navyDeep }}>
+    <section className="relative w-full overflow-hidden" style={{ aspectRatio: ratioCss, background: C.navyDeep }}>
       {banners.map((b, i) => (
         <div key={b.id} className="hero-fade absolute inset-0 w-full h-full" style={{ opacity: i === slide ? 1 : 0, pointerEvents: i === slide ? "auto" : "none" }}>
-          <BannerSlide banner={b} />
+          <BannerSlide banner={b} fit={fit} />
         </div>
       ))}
       {banners.length > 1 && (

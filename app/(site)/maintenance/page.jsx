@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Wrench, CheckCircle2, AlertTriangle } from "lucide-react";
 import { C } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
+import { getBanners } from "../../../lib/db.js";
+import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
 import MaintenanceCTA from "../../../components/site/MaintenanceCTA.jsx";
@@ -16,10 +18,17 @@ const PLANS = [
     items: ["مناسبة لمحطات ومنشآت", "عقد صيانة دوري مخصص", "أولوية في الزيارات الطارئة"] },
 ];
 
-export default function MaintenancePage() {
+export const dynamic = "force-dynamic";
+
+export default async function MaintenancePage() {
+  const pageBanner = pickBanner(await getBanners({ placement: "maintenance" }));
+
   return (
     <div>
       <PageHero
+        imageUrl={pageBanner?.imageUrl}
+        ratio={pageBanner?.ratio}
+        bannerCta={pageBanner?.ctaHref ? { label: pageBanner.ctaLabel, href: pageBanner.ctaHref } : undefined}
         title="الصيانة الدورية"
         subtitle="أغلب أعطال أجهزة التحلية سببها فلتر لم يُستبدل في وقته. باقاتنا تتابع جهازك وتذكّرك قبل أن يتعطل."
         icon="Wrench"

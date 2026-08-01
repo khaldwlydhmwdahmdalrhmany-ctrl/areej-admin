@@ -1,6 +1,8 @@
 import React from "react";
 import { C } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
+import { getBanners } from "../../../lib/db.js";
+import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import FaqAccordion from "../../../components/site/FaqAccordion.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
@@ -17,10 +19,15 @@ const FAQS = [
   { q: "هل تغطون كل مناطق المملكة؟", a: "نعم، نوفر التوصيل لجميع مناطق المملكة، والتركيب المباشر متاح في المدن الرئيسية ويُنسّق فريقنا الجدولة معك بعد الطلب." },
 ];
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  const pageBanner = pickBanner(await getBanners({ placement: "faq" }));
+
   return (
     <div>
       <PageHero
+        imageUrl={pageBanner?.imageUrl}
+        ratio={pageBanner?.ratio}
+        bannerCta={pageBanner?.ctaHref ? { label: pageBanner.ctaLabel, href: pageBanner.ctaHref } : undefined}
         title="الأسئلة الشائعة"
         subtitle="كل ما تحتاج معرفته عن الشحن والتركيب والضمان والصيانة."
         icon="Headset"

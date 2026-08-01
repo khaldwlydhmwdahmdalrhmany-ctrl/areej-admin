@@ -2,6 +2,8 @@ import React from "react";
 import { Phone, MapPin, Clock, MessageCircle, Mail } from "lucide-react";
 import { C, SH, WHATSAPP_NUMBER, buildWhatsAppLink } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
+import { getBanners } from "../../../lib/db.js";
+import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import ContactForm from "../../../components/site/ContactForm.jsx";
 import SectionHead from "../../../components/site/SectionHead.jsx";
@@ -19,10 +21,15 @@ const CONTACT_ITEMS = [
   { icon: Clock, label: "أوقات العمل", value: "السبت – الخميس، 9 صباحًا – 9 مساءً" },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const pageBanner = pickBanner(await getBanners({ placement: "contact" }));
+
   return (
     <div>
       <PageHero
+        imageUrl={pageBanner?.imageUrl}
+        ratio={pageBanner?.ratio}
+        bannerCta={pageBanner?.ctaHref ? { label: pageBanner.ctaLabel, href: pageBanner.ctaHref } : undefined}
         title="تواصل معنا"
         subtitle="سؤال عن جهاز، طلب عرض سعر، أو حجز تركيب — نحن هنا."
         icon="Headset"

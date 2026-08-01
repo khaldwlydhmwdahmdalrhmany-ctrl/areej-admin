@@ -1,7 +1,8 @@
 import React from "react";
-import { getCategories, getProducts, getBanners } from "../../../lib/db.js";
+import { getBanners, getCategories, getProducts } from "../../../lib/db.js";
 import { C } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
+import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import ProductBrowser from "../../../components/site/ProductBrowser.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
@@ -9,21 +10,18 @@ import CtaBand from "../../../components/site/CtaBand.jsx";
 export const dynamic = "force-dynamic";
 
 export default async function ShopPage() {
-  const [categories, products, banners] = await Promise.all([
-    getCategories(),
-    getProducts(),
-    getBanners({ placement: "home" }),
-  ]);
+  const pageBanner = pickBanner(await getBanners({ placement: "shop" }));
 
-  // أول بنر رئيسي نشط يصلح ترويسة لصفحة المتجر
-  const heroBanner = banners.find((b) => b.active && b.imageUrl);
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
 
   return (
     <div>
       <PageHero
+        imageUrl={pageBanner?.imageUrl}
+        ratio={pageBanner?.ratio}
+        bannerCta={pageBanner?.ctaHref ? { label: pageBanner.ctaLabel, href: pageBanner.ctaHref } : undefined}
         title="كل المنتجات"
         subtitle="تصفّح كامل تشكيلة أريج النقاء — من الفلتر المنزلي إلى محطات التحلية الصناعية."
-        imageUrl={heroBanner?.imageUrl}
         icon="Package"
         color={C.navy}
         count={products.length}
