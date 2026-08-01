@@ -38,8 +38,8 @@ export default function AdminProductsPage() {
       ) : products.length === 0 ? (
         <p style={{ color: C.slate }}>لا توجد منتجات بعد. ابدأ بإضافة أول منتج.</p>
       ) : (
-        <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${C.line}`, background: "#fff" }}>
-          <table className="w-full text-sm">
+        <div className="rounded-2xl overflow-x-auto" style={{ border: `1px solid ${C.line}`, background: "#fff" }}>
+          <table className="w-full text-sm min-w-[320px]">
             <thead>
               <tr style={{ background: "#F6FAF9" }}>
                 <th className="text-right p-3">المنتج</th>
