@@ -34,6 +34,31 @@ export default function PrivacyPage() {
         ))}
         <p className="text-xs" style={{ color: C.slate }}>آخر تحديث: {new Date().getFullYear()}</p>
       </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
+        <div className="max-w-3xl flex flex-col gap-4">
+          <h2 className="h-card font-display" style={{ color: C.navy }}>ملفات التتبّع والتحليلات</h2>
+          <div className="text-sm leading-loose flex flex-col gap-3" style={{ color: C.slate }}>
+            <p>
+              نستخدم أدوات تحليل مثل Google Analytics وGoogle Tag Manager وMicrosoft Clarity
+              لفهم كيفية استخدام الموقع وتحسين تجربة التسوّق. قد تضع هذه الأدوات ملفات تعريف
+              ارتباط (Cookies) على متصفحك.
+            </p>
+            <p>
+              كما نسجّل داخليًا بيانات مجهّلة الهوية عن مصدر الزيارة (مثل: جاءت من بحث جوجل أو
+              من إعلان على إنستغرام) والصفحات التي زرتها. <strong>لا نجمع عنوان IP ولا بصمة
+              الجهاز ولا أي بيانات تعرّف بك شخصيًا</strong> ضمن هذه السجلات.
+            </p>
+            <p>
+              نستخدم هذه البيانات لقياس أداء حملاتنا التسويقية فقط. يمكنك تعطيل ملفات تعريف
+              الارتباط من إعدادات متصفحك، وقد يؤثر ذلك على بعض وظائف الموقع.
+            </p>
+            <p>
+              للاستفسار عن بياناتك أو طلب حذفها، راسلنا عبر صفحة «تواصل معنا».
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

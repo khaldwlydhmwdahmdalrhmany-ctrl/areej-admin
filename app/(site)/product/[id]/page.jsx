@@ -8,6 +8,7 @@ import ProductVisual from "../../../../components/site/ProductVisual.jsx";
 import ProductCard from "../../../../components/site/ProductCard.jsx";
 import InstallmentBadge from "../../../../components/site/InstallmentBadge.jsx";
 import ProductActions from "../../../../components/site/ProductActions.jsx";
+import ProductViewTracker from "../../../../components/site/ProductViewTracker.jsx";
 import Rating from "../../../../components/site/Rating.jsx";
 import StockBadge from "../../../../components/site/StockBadge.jsx";
 import ProductTabs from "../../../../components/site/ProductTabs.jsx";
@@ -46,6 +47,8 @@ export default async function ProductPage({ params }) {
 
   return (
     <div>
+      <ProductViewTracker product={product} />
+
       {/* مسار التنقل */}
       <nav aria-label="مسار التنقل" className="max-w-6xl mx-auto px-4 sm:px-6 py-5 text-xs flex items-center gap-1 flex-wrap" style={{ color: C.slateLight }}>
         <Link href="/" className="hover:underline">الرئيسية</Link>

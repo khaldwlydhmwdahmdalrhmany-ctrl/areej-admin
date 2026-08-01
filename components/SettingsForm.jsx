@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Save, Check, Loader2, ExternalLink } from "lucide-react";
 import { SOCIAL_LINKS, CONTACT_SETTINGS } from "../lib/settings.js";
+import { ANALYTICS_SETTINGS, validateAnalyticsId } from "../lib/analytics.js";
 import { getIcon } from "../lib/iconMap.js";
 
 const C = { navy: "#0C1C77", slate: "#4A5A63", line: "#E1ECE8", teal: "#00C6C7", success: "#1B9C68", danger: "#D64545", offWhite: "#F6FAF9" };
@@ -15,6 +16,11 @@ export default function SettingsForm({ initial = {} }) {
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
   const save = async () => {
+    // تحقّق من صيغ المعرّفات قبل الحفظ — معرّف خاطئ يعطّل التتبّع بصمت
+    for (const a of ANALYTICS_SETTINGS) {
+      const msg = validateAnalyticsId(a.key, form[a.key]);
+      if (msg) { setError(msg); return; }
+    }
     setSaving(true); setError("");
     try {
       const res = await fetch("/api/settings", {
@@ -65,6 +71,39 @@ export default function SettingsForm({ initial = {} }) {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* التتبّع والتحليلات */}
+      <section className="p-5 sm:p-6 rounded-2xl" style={{ background: "#fff", border: `1px solid ${C.line}` }}>
+        <h2 className="font-bold text-sm mb-1" style={{ color: C.navy }}>التتبّع والتحليلات</h2>
+        <p className="text-xs mb-5 leading-relaxed" style={{ color: C.slate }}>
+          أضف معرّف Google Tag Manager وحده، ثم ثبّت كل بكسلات المنصات (ميتا، تيك توك، سناب، X)
+          من داخل حاوية GTM — بلا حاجة لتعديل كود الموقع مرة أخرى.
+        </p>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          {ANALYTICS_SETTINGS.map((a) => (
+            <div key={a.key} className={a.primary ? "sm:col-span-2" : ""}>
+              <label className="text-xs font-bold flex items-center gap-2 mb-1.5" style={{ color: C.navy }}>
+                {a.label}
+                {a.primary && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: "#EAF8F1", color: "#0C7A55" }}>
+                    الأهم
+                  </span>
+                )}
+              </label>
+              <input
+                value={form[a.key] || ""}
+                onChange={set(a.key)}
+                placeholder={a.placeholder}
+                dir="ltr"
+                className={`${field} text-left`}
+                style={{ ...fStyle, borderColor: a.primary && form[a.key] ? C.teal : C.line }}
+              />
+              {a.note && <p className="text-[11px] mt-1.5" style={{ color: C.slate }}>{a.note}</p>}
+            </div>
+          ))}
         </div>
       </section>
 

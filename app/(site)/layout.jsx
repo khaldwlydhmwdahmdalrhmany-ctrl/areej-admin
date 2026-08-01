@@ -5,6 +5,7 @@ import Ticker from "../../components/site/Ticker.jsx";
 import Header from "../../components/site/Header.jsx";
 import Footer from "../../components/site/Footer.jsx";
 import CartDrawer from "../../components/site/CartDrawer.jsx";
+import VisitTracker from "../../components/site/VisitTracker.jsx";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function SiteLayout({ children }) {
       <main>{children}</main>
       <Footer settings={settings} />
       <CartDrawer />
+      <VisitTracker />
     </CartProvider>
   );
 }

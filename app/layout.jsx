@@ -1,4 +1,6 @@
 import "./globals.css";
+import { getSettings } from "../lib/db.js";
+import AnalyticsScripts, { GtmNoScript } from "../components/site/AnalyticsScripts.jsx";
 
 export const metadata = {
   metadataBase: new URL("https://areej-alnaqaa-admin.vercel.app"),
@@ -25,7 +27,9 @@ export const viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const settings = await getSettings().catch(() => ({}));
+
   return (
     <html lang="ar" dir="rtl">
       <head>
@@ -36,8 +40,18 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
+        {settings.gsc_verification && (
+          <meta name="google-site-verification" content={settings.gsc_verification} />
+        )}
+        {settings.bing_verification && (
+          <meta name="msvalidate.01" content={settings.bing_verification} />
+        )}
       </head>
-      <body>{children}</body>
+      <body>
+        <GtmNoScript settings={settings} />
+        <AnalyticsScripts settings={settings} />
+        {children}
+      </body>
     </html>
   );
 }

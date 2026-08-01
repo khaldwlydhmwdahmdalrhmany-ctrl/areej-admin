@@ -1,6 +1,8 @@
 "use client";
 import React, { createContext, useContext, useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { formatPrice, buildWhatsAppLink } from "../lib/colors.js";
+import { resolveAttribution } from "../lib/attribution.js";
+import { trackAddToCart, trackBeginCheckout, trackPurchase } from "../lib/analytics.js";
 
 const CartContext = createContext(null);
 
@@ -10,6 +12,8 @@ export function CartProvider({ children, allProducts }) {
   const [toast, setToast] = useState(null);
   const [customer, setCustomer] = useState({ name: "", phone: "", city: "" });
   const [formTouched, setFormTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [confirmation, setConfirmation] = useState(null);
   const toastTimer = useRef(null);
 
   useEffect(() => () => toastTimer.current && clearTimeout(toastTimer.current), []);
@@ -29,7 +33,10 @@ export function CartProvider({ children, allProducts }) {
       return [...prev, { id, qty }];
     });
     const p = findProduct(id);
-    if (p) showToast(`تمت إضافة «${p.name}» إلى السلة`);
+    if (p) {
+      showToast(`تمت إضافة «${p.name}» إلى السلة`);
+      trackAddToCart(p, qty);   // يلتقطه GTM فيغذّي كل البكسلات دفعة واحدة
+    }
   }, [findProduct, showToast]);
 
   const updateQty = useCallback((id, delta) => {
@@ -46,15 +53,22 @@ export function CartProvider({ children, allProducts }) {
   const sendToWhatsApp = useCallback(async () => {
     setFormTouched(true);
     if (!(customer.name.trim() && customer.phone.trim() && cart.length > 0)) return;
+    if (submitting) return;
+
+    setSubmitting(true);
+    const attr = resolveAttribution();
+    trackBeginCheckout(cartDetails, cartTotal);
     const lines = cartDetails.map((i) => `• ${i.product.name} × ${i.qty} = ${formatPrice(i.product.price * i.qty)} ريال`).join("\n");
     const msg =
       `مرحبًا أريج النقاء 🌿\nأرغب بإتمام الطلب التالي:\n\n${lines}\n\n` +
       `الإجمالي: ${formatPrice(cartTotal)} ريال\n\n` +
       `الاسم: ${customer.name}\nالجوال: ${customer.phone}\nالمدينة / العنوان: ${customer.city || "—"}`;
 
-    // حفظ الطلب في قاعدة البيانات (لا يمنع فتح واتساب حتى لو فشل)
+    // حفظ الطلب أولًا للحصول على رقم الطلب، ثم إدراجه في رسالة واتساب.
+    // لو فشل الحفظ نكمل بلا رقم بدل حجب العميل عن إتمام طلبه.
+    let orderNumber = null;
     try {
-      await fetch("/api/orders", {
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -63,12 +77,33 @@ export function CartProvider({ children, allProducts }) {
           customerCity: customer.city,
           items: cartDetails.map((i) => ({ id: i.id, name: i.product.name, qty: i.qty, price: i.product.price })),
           total: cartTotal,
+          // مصدر الزيارة التي أنتجت هذا الطلب — أساس تقارير لوحة التحكم
+          source: attr?.source, medium: attr?.medium,
+          campaign: attr?.campaign, landingPath: attr?.landingPath,
         }),
       });
+      if (res.ok) {
+        const order = await res.json();
+        orderNumber = order?.orderNumber || null;
+      }
     } catch {}
 
-    window.open(buildWhatsAppLink(msg), "_blank");
-  }, [customer, cart, cartDetails, cartTotal]);
+    const finalMsg = orderNumber ? `رقم الطلب: ${orderNumber}\n\n${msg}` : msg;
+
+    trackPurchase(orderNumber, cartDetails, cartTotal, attr);
+    setSubmitting(false);
+    setConfirmation({ orderNumber, total: cartTotal, name: customer.name, link: buildWhatsAppLink(finalMsg) });
+    window.open(buildWhatsAppLink(finalMsg), "_blank");
+  }, [customer, cart, cartDetails, cartTotal, submitting]);
+
+  /** يُستدعى من شاشة التأكيد لبدء طلب جديد. */
+  const closeConfirmation = useCallback(() => {
+    setConfirmation(null);
+    setCart([]);
+    setCartOpen(false);
+    setCustomer({ name: "", phone: "", city: "" });
+    setFormTouched(false);
+  }, []);
 
   const buyNow = useCallback((id) => {
     addToCart(id, 1);
@@ -79,7 +114,7 @@ export function CartProvider({ children, allProducts }) {
     cart, cartDetails, cartCount, cartTotal, cartOpen, setCartOpen,
     addToCart, updateQty, removeItem, buyNow,
     customer, setCustomer, formTouched, setFormTouched, canCheckout, sendToWhatsApp,
-    toast,
+    toast, submitting, confirmation, closeConfirmation,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

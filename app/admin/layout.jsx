@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, Package, Tags, Image as ImageIcon, ShoppingBag, LogOut, Settings } from "lucide-react";
+import { LayoutGrid, Package, Tags, Image as ImageIcon, ShoppingBag, LogOut, Settings, BarChart3 } from "lucide-react";
 
 const C = { navy: "#0C1C77", teal: "#00C6C7", line: "#E1ECE8", slate: "#5C6B72", offWhite: "#F6FAF9", ink: "#0B1220" };
 
@@ -12,6 +12,7 @@ const NAV = [
   { href: "/admin/categories", label: "التصنيفات", icon: Tags },
   { href: "/admin/banners", label: "البنرات", icon: ImageIcon },
   { href: "/admin/orders", label: "الطلبات", icon: ShoppingBag },
+  { href: "/admin/analytics", label: "التحليلات", icon: BarChart3 },
   { href: "/admin/settings", label: "الإعدادات", icon: Settings },
 ];
 
