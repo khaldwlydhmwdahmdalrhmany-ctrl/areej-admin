@@ -11,7 +11,9 @@ const NAV_LINKS = [
   { to: "/", label: "الرئيسية" },
   { to: "/offers", label: "العروض" },
   { to: "/maintenance", label: "الصيانة الدورية" },
-  { to: "/maintenance/urgent", label: "صيانة عاجلة" },
+  { to: "/maintenance/technician", label: "طلب فني" },
+  { to: "/maintenance/urgent", label: "صيانة عاجلة", urgent: true },
+  { to: "/about", label: "نبذة عنا" },
   { to: "/contact", label: "تواصل معنا" },
 ];
 
@@ -57,7 +59,16 @@ export default function Header({ categories }) {
           </div>
           <Link href="/offers" className="font-medium" style={{ color: C.ink }}>العروض</Link>
           <Link href="/maintenance" className="font-medium" style={{ color: C.ink }}>الصيانة الدورية</Link>
-          <Link href="/maintenance/urgent" className="font-medium" style={{ color: C.ink }}>صيانة عاجلة</Link>
+          <Link href="/maintenance/technician" className="font-medium" style={{ color: C.ink }}>طلب فني</Link>
+          <Link
+            href="/maintenance/urgent"
+            className="font-bold inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-colors"
+            style={{ color: C.danger, background: `${C.danger}0F` }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.danger }} />
+            صيانة عاجلة
+          </Link>
+          <Link href="/about" className="font-medium" style={{ color: C.ink }}>نبذة عنا</Link>
           <Link href="/contact" className="font-medium" style={{ color: C.ink }}>تواصل معنا</Link>
         </nav>
 
@@ -91,7 +102,17 @@ export default function Header({ categories }) {
           })}
           <Link href="/offers" onClick={() => setMenuOpen(false)}>العروض</Link>
           <Link href="/maintenance" onClick={() => setMenuOpen(false)}>الصيانة الدورية</Link>
-          <Link href="/maintenance/urgent" onClick={() => setMenuOpen(false)}>صيانة عاجلة</Link>
+          <Link href="/maintenance/technician" onClick={() => setMenuOpen(false)}>طلب فني صيانة</Link>
+          <Link
+            href="/maintenance/urgent"
+            onClick={() => setMenuOpen(false)}
+            className="inline-flex items-center gap-2 font-bold"
+            style={{ color: C.danger }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.danger }} />
+            صيانة عاجلة
+          </Link>
+          <Link href="/about" onClick={() => setMenuOpen(false)}>نبذة عن الشركة</Link>
           <Link href="/faq" onClick={() => setMenuOpen(false)}>الأسئلة الشائعة</Link>
           <Link href="/contact" onClick={() => setMenuOpen(false)}>تواصل معنا</Link>
         </div>

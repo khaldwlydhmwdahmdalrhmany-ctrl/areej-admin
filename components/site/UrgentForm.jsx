@@ -171,7 +171,7 @@ export default function UrgentForm() {
             </p>
           )}
 
-          <button onClick={submit} className="btn w-full py-4 text-sm mt-4"
+          <button onClick={submit} className="btn pulse-urgent w-full py-4 text-sm mt-4"
                   style={{ background: C.danger, color: "#fff" }}>
             <Send size={17} /> أرسل الطلب العاجل الآن
           </button>

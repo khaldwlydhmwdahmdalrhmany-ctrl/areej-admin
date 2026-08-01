@@ -1,14 +1,22 @@
 import React from "react";
 import Link from "next/link";
-import { Phone, MapPin, MessageCircle } from "lucide-react";
+import { Phone, MapPin, MessageCircle, Mail, Clock } from "lucide-react";
 import { C } from "../../lib/colors.js";
 import PetalLogo from "./PetalLogo.jsx";
+import SocialLinks from "./SocialLinks.jsx";
 
-export default function Footer() {
+export default function Footer({ settings = {} }) {
+  const phone = settings.contact_phone || "+966 53 254 0595";
+  const address = settings.contact_address || "المملكة العربية السعودية";
+  const email = settings.contact_email;
+  const hours = settings.contact_hours;
+
+  const dim = `${C.pearl}99`;
+
   return (
     <footer style={{ background: C.navyDeep, color: C.pearl }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid sm:grid-cols-4 gap-8">
-        <div className="sm:col-span-1">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div>
           <div className="flex items-center gap-2 mb-3">
             <PetalLogo size={28} />
             <div className="flex flex-col leading-none">
@@ -16,36 +24,55 @@ export default function Footer() {
               <span className="text-[10px]" style={{ color: `${C.pearl}80` }}>المتميز لتحلية المياه</span>
             </div>
           </div>
-          <p className="text-sm" style={{ color: `${C.pearl}99` }}>
+          <p className="text-sm mb-5" style={{ color: dim }}>
             وجهتك لأجهزة تحلية وتنقية المياه والبرادات ومحطات التحلية بالمملكة.
           </p>
+          <SocialLinks settings={settings} variant="dark" />
         </div>
+
         <div>
           <h4 className="font-bold mb-3 text-sm">روابط سريعة</h4>
-          <ul className="space-y-2 text-sm" style={{ color: `${C.pearl}99` }}>
-            <li><Link href="/">الرئيسية</Link></li>
-            <li><Link href="/shop">المنتجات</Link></li>
-            <li><Link href="/offers">العروض</Link></li>
+          <ul className="space-y-2 text-sm" style={{ color: dim }}>
+            <li><Link href="/" className="hover:underline">الرئيسية</Link></li>
+            <li><Link href="/shop" className="hover:underline">المنتجات</Link></li>
+            <li><Link href="/offers" className="hover:underline">العروض</Link></li>
+            <li><Link href="/about" className="hover:underline">نبذة عن الشركة</Link></li>
           </ul>
         </div>
+
         <div>
           <h4 className="font-bold mb-3 text-sm">الدعم والصيانة</h4>
-          <ul className="space-y-2 text-sm" style={{ color: `${C.pearl}99` }}>
-            <li><Link href="/maintenance">الصيانة الدورية</Link></li>
-            <li><Link href="/maintenance/urgent">طلب صيانة عاجلة</Link></li>
-            <li><Link href="/faq">الأسئلة الشائعة</Link></li>
-            <li><Link href="/privacy">سياسة الخصوصية</Link></li>
+          <ul className="space-y-2 text-sm" style={{ color: dim }}>
+            <li><Link href="/maintenance" className="hover:underline">الصيانة الدورية</Link></li>
+            <li><Link href="/maintenance/technician" className="hover:underline">طلب فني صيانة</Link></li>
+            <li><Link href="/maintenance/urgent" className="hover:underline">صيانة عاجلة</Link></li>
+            <li><Link href="/faq" className="hover:underline">الأسئلة الشائعة</Link></li>
+            <li><Link href="/privacy" className="hover:underline">سياسة الخصوصية</Link></li>
           </ul>
         </div>
+
         <div>
           <h4 className="font-bold mb-3 text-sm">تواصل معنا</h4>
-          <ul className="space-y-2 text-sm" style={{ color: `${C.pearl}99` }}>
-            <li className="flex items-center gap-2"><Phone size={14} /> 966532540595+</li>
-            <li className="flex items-center gap-2"><MapPin size={14} /> المملكة العربية السعودية</li>
-            <li className="flex items-center gap-2"><MessageCircle size={14} /> الرد عبر واتساب خلال دقائق</li>
+          <ul className="space-y-2 text-sm" style={{ color: dim }}>
+            <li>
+              <a href={`tel:${phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:underline">
+                <Phone size={14} className="shrink-0" /> <span dir="ltr">{phone}</span>
+              </a>
+            </li>
+            {email && (
+              <li>
+                <a href={`mailto:${email}`} className="flex items-center gap-2 hover:underline">
+                  <Mail size={14} className="shrink-0" /> <span dir="ltr">{email}</span>
+                </a>
+              </li>
+            )}
+            <li className="flex items-center gap-2"><MapPin size={14} className="shrink-0" /> {address}</li>
+            {hours && <li className="flex items-center gap-2"><Clock size={14} className="shrink-0" /> {hours}</li>}
+            <li className="flex items-center gap-2"><MessageCircle size={14} className="shrink-0" /> الرد عبر واتساب خلال دقائق</li>
           </ul>
         </div>
       </div>
+
       <div className="text-center text-xs py-4 border-t" style={{ borderColor: `${C.pearl}22`, color: `${C.pearl}66` }}>
         © {new Date().getFullYear()} أريج النقاء المتميز لتحلية المياه. جميع الحقوق محفوظة.
       </div>

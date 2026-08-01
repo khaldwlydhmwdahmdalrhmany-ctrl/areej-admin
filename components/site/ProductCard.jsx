@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { ShoppingCart, Truck, Wrench, Zap } from "lucide-react";
+import { ShoppingCart, Truck, Wrench, Zap, Check } from "lucide-react";
 import { C, SH, formatPrice, buyNowLink } from "../../lib/colors.js";
 import ProductVisual from "./ProductVisual.jsx";
 import Rating from "./Rating.jsx";
@@ -10,6 +10,14 @@ import { useCart } from "../../context/CartContext.jsx";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const [added, setAdded] = React.useState(false);
+
+  const handleAdd = () => {
+    addToCart(product.id);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
+
   const hasDiscount = product.oldPrice && product.oldPrice > product.price;
   const soldOut = product.stock === "out_of_stock";
 
@@ -30,7 +38,7 @@ export default function ProductCard({ product }) {
         )}
       </Link>
 
-      <div className="p-3.5 sm:p-4 flex flex-col gap-2 flex-1">
+      <div className="p-2.5 sm:p-4 flex flex-col gap-1.5 sm:gap-2 flex-1">
         <div className="flex items-center justify-between gap-2">
           <span className="text-[11px] font-bold truncate" style={{ color: product.category?.color || C.navy }}>
             {product.category?.name}
@@ -72,7 +80,7 @@ export default function ProductCard({ product }) {
         <div className="flex items-end justify-between gap-2 mt-1">
           <div className="flex flex-col">
             {hasDiscount && (
-              <span className="text-[11px] line-through" style={{ color: C.slateLight }}>
+              <span className="text-[11px] line-through font-semibold" style={{ color: C.oldPrice }}>
                 {formatPrice(product.oldPrice)} ر.س
               </span>
             )}
@@ -83,16 +91,21 @@ export default function ProductCard({ product }) {
           <StockBadge stock={product.stock} />
         </div>
 
-        {/* زرّا الشراء */}
-        <div className="grid grid-cols-2 gap-2 mt-2">
+        {/* زرّا الشراء — زر السلة مربّع صغير، والشراء يأخذ بقية العرض */}
+        <div className="flex gap-1.5 mt-1.5">
           <button
-            onClick={() => addToCart(product.id)}
+            onClick={handleAdd}
             disabled={soldOut}
-            className="btn py-2.5 text-[12px]"
-            style={{ background: C.mintTint, color: C.navy }}
+            className="btn shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
+            style={{
+              background: added ? C.success : C.mintTint,
+              color: added ? "#fff" : C.navy,
+              padding: 0,
+            }}
             aria-label={`أضف ${product.name} إلى السلة`}
+            title="أضف إلى السلة"
           >
-            <ShoppingCart size={14} /> للسلة
+            {added ? <Check size={15} className="pop-in" /> : <ShoppingCart size={15} />}
           </button>
 
           <a
@@ -100,14 +113,15 @@ export default function ProductCard({ product }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-disabled={soldOut}
-            className="btn py-2.5 text-[12px]"
+            className="btn flex-1 h-9 sm:h-10 rounded-xl text-[11px] sm:text-xs"
             style={{
               background: soldOut ? C.lineSoft : C.navy,
               color: soldOut ? C.slateLight : "#fff",
               pointerEvents: soldOut ? "none" : "auto",
+              padding: 0,
             }}
           >
-            <Zap size={14} /> اشترِ الآن
+            <Zap size={13} /> اشترِ الآن
           </a>
         </div>
       </div>

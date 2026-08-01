@@ -58,7 +58,7 @@ export default function OfferSpotlight({ product }) {
             </div>
             <div className="flex flex-col">
               <span className="text-[11px]" style={{ color: "rgba(255,255,255,.6)" }}>بدلًا من</span>
-              <span className="text-lg line-through" style={{ color: "rgba(255,255,255,.55)" }}>
+              <span className="text-lg line-through font-semibold" style={{ color: "#FF8A8A" }}>
                 {formatPrice(product.oldPrice)} ر.س
               </span>
             </div>

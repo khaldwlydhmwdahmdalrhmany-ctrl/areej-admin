@@ -1,5 +1,5 @@
 import React from "react";
-import { getCategories, getProducts } from "../../lib/db.js";
+import { getCategories, getProducts, getSettings } from "../../lib/db.js";
 import { CartProvider } from "../../context/CartContext.jsx";
 import Ticker from "../../components/site/Ticker.jsx";
 import Header from "../../components/site/Header.jsx";
@@ -9,14 +9,18 @@ import CartDrawer from "../../components/site/CartDrawer.jsx";
 export const dynamic = "force-dynamic";
 
 export default async function SiteLayout({ children }) {
-  const [categories, allProducts] = await Promise.all([getCategories(), getProducts()]);
+  const [categories, allProducts, settings] = await Promise.all([
+    getCategories(),
+    getProducts(),
+    getSettings().catch(() => ({})),   // الإعدادات ليست حرجة — لا نُسقط الصفحة إن فشلت
+  ]);
 
   return (
     <CartProvider allProducts={allProducts}>
       <Ticker />
       <Header categories={categories} />
       <main>{children}</main>
-      <Footer />
+      <Footer settings={settings} />
       <CartDrawer />
     </CartProvider>
   );

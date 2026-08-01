@@ -2,7 +2,7 @@ import React from "react";
 import { Phone, MapPin, Clock, MessageCircle, Mail } from "lucide-react";
 import { C, SH, WHATSAPP_NUMBER, buildWhatsAppLink } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
-import { getBanners } from "../../../lib/db.js";
+import { getBanners, getSettings } from "../../../lib/db.js";
 import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import ContactForm from "../../../components/site/ContactForm.jsx";
@@ -11,18 +11,27 @@ import FaqAccordion from "../../../components/site/FaqAccordion.jsx";
 
 export const dynamic = "force-dynamic";
 
-// TODO: استبدل هذا بالعنوان الفعلي للمعرض ليظهر على الخريطة بدقة.
-// اتركه فارغًا ("") لإخفاء قسم الخريطة بالكامل بدل عرض موقع تقريبي مضلّل.
-const MAP_QUERY = "";
 
-const CONTACT_ITEMS = [
-  { icon: Phone, label: "الهاتف وواتساب", value: "+966 53 254 0595", href: `tel:+${WHATSAPP_NUMBER}` },
-  { icon: MapPin, label: "نطاق الخدمة", value: "المملكة العربية السعودية" },
-  { icon: Clock, label: "أوقات العمل", value: "السبت – الخميس، 9 صباحًا – 9 مساءً" },
-];
+
+/** بيانات التواصل تُقرأ من لوحة التحكم، مع قيم افتراضية معقولة. */
+function contactItems(s = {}) {
+  const phone = s.contact_phone || "+966 53 254 0595";
+  return [
+    { icon: Phone, label: "الهاتف وواتساب", value: phone, href: `tel:${phone.replace(/\s/g, "")}` },
+    s.contact_email && { icon: Mail, label: "البريد الإلكتروني", value: s.contact_email, href: `mailto:${s.contact_email}` },
+    { icon: MapPin, label: "نطاق الخدمة", value: s.contact_address || "المملكة العربية السعودية" },
+    { icon: Clock, label: "أوقات العمل", value: s.contact_hours || "السبت – الخميس، 9 صباحًا – 9 مساءً" },
+  ].filter(Boolean);
+}
 
 export default async function ContactPage() {
-  const pageBanner = pickBanner(await getBanners({ placement: "contact" }));
+  const [banners, settings] = await Promise.all([
+    getBanners({ placement: "contact" }),
+    getSettings().catch(() => ({})),
+  ]);
+  const pageBanner = pickBanner(banners);
+  const MAP_QUERY = (settings.map_query || "").trim();
+  const CONTACT_ITEMS = contactItems(settings);
 
   return (
     <div>

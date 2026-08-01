@@ -47,6 +47,15 @@ export default function OrderCard({ order }) {
     <div className="p-4 rounded-2xl" style={{ background: "#fff", border: `1px solid ${C.line}` }}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
+          {order.orderNumber && (
+            <span
+              className="inline-block text-[11px] font-bold px-2 py-0.5 rounded-md mb-1.5 tracking-wide"
+              dir="ltr"
+              style={{ background: "#EAF2FF", color: "#1E4DB7" }}
+            >
+              {order.orderNumber}
+            </span>
+          )}
           <p className="font-bold text-sm" style={{ color: C.navy }}>{order.customerName}</p>
           <p className="text-xs mt-0.5" style={{ color: C.slate }}>
             <a href={`tel:${order.customerPhone}`} className="hover:underline">{order.customerPhone}</a>

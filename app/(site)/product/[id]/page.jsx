@@ -96,7 +96,7 @@ export default async function ProductPage({ params }) {
               </span>
               {off > 0 && (
                 <>
-                  <span className="text-sm line-through" style={{ color: C.slateLight }}>
+                  <span className="text-sm line-through font-semibold" style={{ color: C.oldPrice }}>
                     {formatPrice(product.oldPrice)} ر.س
                   </span>
                   <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: C.danger, color: "#fff" }}>

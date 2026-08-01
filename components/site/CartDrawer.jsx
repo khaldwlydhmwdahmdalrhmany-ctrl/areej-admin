@@ -1,15 +1,16 @@
 "use client";
 import React from "react";
-import { X, Plus, Minus, ShoppingCart, MessageCircle, CheckCircle2 } from "lucide-react";
+import { X, Plus, Minus, ShoppingCart, MessageCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { C, formatPrice } from "../../lib/colors.js";
 import { getIcon } from "../../lib/iconMap.js";
 import { useCart } from "../../context/CartContext.jsx";
+import OrderConfirmation from "./OrderConfirmation.jsx";
 
 export default function CartDrawer() {
   const {
     cartOpen, setCartOpen, cartDetails, cartTotal,
     updateQty, removeItem, customer, setCustomer,
-    formTouched, canCheckout, sendToWhatsApp, toast,
+    formTouched, canCheckout, sendToWhatsApp, toast, submitting,
   } = useCart();
 
   return (
@@ -72,14 +73,25 @@ export default function CartDrawer() {
                   <span className="text-sm font-bold" style={{ color: C.slate }}>الإجمالي</span>
                   <span className="font-display text-xl" style={{ color: C.navy }}>{formatPrice(cartTotal)} ر.س</span>
                 </div>
-                <button onClick={sendToWhatsApp} className="w-full py-3 rounded-full font-bold text-sm flex items-center justify-center gap-2" style={{ background: "#25D366", color: "#fff" }}>
-                  <MessageCircle size={18} /> إتمام الطلب عبر واتساب
+                <button
+                  onClick={sendToWhatsApp}
+                  disabled={submitting}
+                  className="btn w-full py-3.5 text-sm"
+                  style={{ background: "#25D366", color: "#fff" }}
+                >
+                  {submitting ? (
+                    <><Loader2 size={17} className="animate-spin" /> جارٍ تسجيل الطلب…</>
+                  ) : (
+                    <><MessageCircle size={18} /> إتمام الطلب عبر واتساب</>
+                  )}
                 </button>
               </div>
             )}
           </div>
         </div>
       )}
+
+      <OrderConfirmation />
 
       {toast && (
         <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold shadow-lg" style={{ background: C.navy, color: C.pearl }}>
