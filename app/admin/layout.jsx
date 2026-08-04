@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutGrid, Package, Tags, Image as ImageIcon, ShoppingBag,
-  LogOut, Settings, BarChart3, Menu, X, ExternalLink,
+  LogOut, Settings, BarChart3, Menu, X, ExternalLink, Percent,
 } from "lucide-react";
 
 const C = { navy: "#0C1C77", navyDeep: "#071233", teal: "#00C6C7", line: "#E1ECE8", slate: "#5C6B72", offWhite: "#F6FAF9", ink: "#0B1220", danger: "#c05050" };
@@ -14,6 +14,7 @@ const NAV = [
   { href: "/admin/products", label: "المنتجات", icon: Package },
   { href: "/admin/categories", label: "التصنيفات", icon: Tags },
   { href: "/admin/banners", label: "البنرات", icon: ImageIcon },
+  { href: "/admin/offers", label: "العروض", icon: Percent },
   { href: "/admin/orders", label: "الطلبات", icon: ShoppingBag },
   { href: "/admin/analytics", label: "التحليلات", icon: BarChart3 },
   { href: "/admin/settings", label: "الإعدادات", icon: Settings },
