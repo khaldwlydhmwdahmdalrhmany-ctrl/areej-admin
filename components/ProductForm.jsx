@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Star } from "lucide-react";
+import BadgePicker from "./BadgePicker.jsx";
+import ImageUploader from "./ImageUploader.jsx";
 
 const C = { navy: "#0C1C77", teal: "#00C6C7", line: "#E1ECE8", slate: "#5C6B72", mintTint: "#EAF8F1" };
 
@@ -12,6 +15,7 @@ export default function ProductForm({ initial, productId }) {
       name: "", description: "", fullDescription: "", price: "", oldPrice: "",
       badge: "", imageUrl: "", freeShipping: false, freeInstall: false, categoryId: "",
       brand: "", stock: "in_stock", rating: "", reviewCount: "",
+      published: true, sortOrder: 0, featuredOffer: false,
     }
   );
   const [uploading, setUploading] = useState(false);
@@ -28,20 +32,6 @@ export default function ProductForm({ initial, productId }) {
   const set = (key) => (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setForm((f) => ({ ...f, [key]: val }));
-  };
-
-  const uploadImage = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    setError("");
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    setUploading(false);
-    if (!res.ok) { setError(data.error || "فشل رفع الصورة"); return; }
-    setForm((f) => ({ ...f, imageUrl: data.url }));
   };
 
   const submit = async (e) => {
@@ -63,6 +53,7 @@ export default function ProductForm({ initial, productId }) {
         rating: form.rating === "" ? null : form.rating,
         reviewCount: form.reviewCount === "" ? null : form.reviewCount,
         brand: form.brand?.trim() || null,
+        sortOrder: Number(form.sortOrder) || 0,
       }),
     });
     setSaving(false);
@@ -76,10 +67,10 @@ export default function ProductForm({ initial, productId }) {
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4 max-w-xl">
+    <form onSubmit={submit} className="flex flex-col gap-5 w-full max-w-xl">
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>اسم المنتج</label>
-        <input value={form.name} onChange={set("name")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        <input value={form.name} onChange={set("name")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
       </div>
 
       <div>
@@ -99,30 +90,27 @@ export default function ProductForm({ initial, productId }) {
         <textarea value={form.fullDescription} onChange={set("fullDescription")} rows={4} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none resize-none" style={{ border: `1.5px solid ${C.line}` }} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>السعر (ريال)</label>
-          <input type="number" value={form.price} onChange={set("price")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+          <input type="number" value={form.price} onChange={set("price")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
         </div>
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>السعر قبل الخصم (اختياري)</label>
-          <input type="number" value={form.oldPrice} onChange={set("oldPrice")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+          <input type="number" value={form.oldPrice} onChange={set("oldPrice")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
         </div>
       </div>
 
-      <div>
-        <label className="text-xs font-bold" style={{ color: C.navy }}>شارة المنتج (اختياري، مثل: جديد / عرض)</label>
-        <input value={form.badge} onChange={set("badge")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
-      </div>
+      <BadgePicker value={form.badge} onChange={(v) => setForm((f) => ({ ...f, badge: v }))} />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>الماركة (اختياري)</label>
           <input
             value={form.brand || ""}
             onChange={set("brand")}
             placeholder="مثال: GuldenPRO"
-            className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none"
+            className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0"
             style={{ border: `1.5px solid ${C.line}` }}
           />
           <p className="text-[11px] mt-1" style={{ color: C.slate }}>تظهر كخيار في فلتر الماركات بالمتجر.</p>
@@ -150,7 +138,7 @@ export default function ProductForm({ initial, productId }) {
           اتركهما فارغين إن لم توجد تقييمات فعلية؛ عندها لا تظهر أي نجوم في المتجر.
           نشر تقييمات غير حقيقية مخالف لنظام التجارة الإلكترونية السعودي وقد يعاقب عليه محرك البحث.
         </p>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="text-xs font-bold" style={{ color: C.navy }}>متوسط التقييم (1–5)</label>
             <input
@@ -158,7 +146,7 @@ export default function ProductForm({ initial, productId }) {
               value={form.rating ?? ""}
               onChange={set("rating")}
               placeholder="فارغ = بلا تقييم"
-              className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none"
+              className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0"
               style={{ border: `1.5px solid ${C.line}` }}
             />
           </div>
@@ -169,7 +157,7 @@ export default function ProductForm({ initial, productId }) {
               value={form.reviewCount ?? ""}
               onChange={set("reviewCount")}
               placeholder="فارغ = بلا تقييم"
-              className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none"
+              className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0"
               style={{ border: `1.5px solid ${C.line}` }}
             />
           </div>
@@ -177,12 +165,74 @@ export default function ProductForm({ initial, productId }) {
       </div>
 
       <div>
-        <label className="text-xs font-bold" style={{ color: C.navy }}>صورة المنتج</label>
-        <div className="flex items-center gap-3 mt-1">
-          {form.imageUrl && <img src={form.imageUrl} alt="" className="w-16 h-16 rounded-xl object-cover" style={{ border: `1px solid ${C.line}` }} />}
-          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadImage} className="text-sm" />
+        <ImageUploader
+          value={form.imageUrl}
+          onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+          preset="product"
+          label="صورة المنتج"
+        />
+      </div>
+
+      {/* الظهور والترتيب */}
+      <div className="p-4 rounded-xl flex flex-col gap-4" style={{ background: C.mintTint }}>
+        <button
+          type="button"
+          onClick={() => setForm((f) => ({ ...f, published: !f.published }))}
+          className="flex items-center justify-between gap-3 text-right"
+        >
+          <span className="flex items-center gap-2">
+            {form.published ? <Eye size={16} color="#1B9C68" /> : <EyeOff size={16} color="#D64545" />}
+            <span className="flex flex-col">
+              <span className="text-xs font-bold" style={{ color: C.navy }}>
+                {form.published ? "المنتج ظاهر في المتجر" : "المنتج مخفي عن الزوار"}
+              </span>
+              <span className="text-[11px]" style={{ color: C.slate }}>
+                الإخفاء لا يحذف المنتج ولا بياناته — يمكنك إعادته في أي وقت.
+              </span>
+            </span>
+          </span>
+          <span
+            className="w-11 h-6 rounded-full shrink-0 flex items-center px-0.5 transition-colors"
+            style={{ background: form.published ? "#1B9C68" : "#C9D4D0" }}
+          >
+            <span
+              className="w-5 h-5 rounded-full bg-white transition-transform"
+              style={{ transform: form.published ? "translateX(-20px)" : "translateX(0)" }}
+            />
+          </span>
+        </button>
+
+        <div className="grid sm:grid-cols-2 gap-4 pt-1" style={{ borderTop: `1px solid ${C.line}` }}>
+          <div className="pt-3">
+            <label className="text-xs font-bold" style={{ color: C.navy }}>ترتيب الظهور</label>
+            <input
+              type="number"
+              value={form.sortOrder ?? 0}
+              onChange={set("sortOrder")}
+              className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0"
+              style={{ border: `1.5px solid ${C.line}` }}
+            />
+            <p className="text-[11px] mt-1" style={{ color: C.slate }}>الأصغر يظهر أولًا. اتركه 0 للترتيب الافتراضي.</p>
+          </div>
+
+          <label className="pt-3 flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={!!form.featuredOffer}
+              onChange={set("featuredOffer")}
+              className="mt-0.5 w-4 h-4 shrink-0"
+              style={{ accentColor: "#F2B01E" }}
+            />
+            <span className="flex flex-col">
+              <span className="text-xs font-bold flex items-center gap-1.5" style={{ color: C.navy }}>
+                <Star size={13} color="#F2B01E" /> تثبيت كصفقة الصدارة
+              </span>
+              <span className="text-[11px]" style={{ color: C.slate }}>
+                يظهر في أعلى صفحة العروض ببطاقة كبيرة بدل الاختيار التلقائي.
+              </span>
+            </span>
+          </label>
         </div>
-        {uploading && <p className="text-xs mt-1" style={{ color: C.slate }}>جاري رفع الصورة...</p>}
       </div>
 
       <div className="flex gap-6">

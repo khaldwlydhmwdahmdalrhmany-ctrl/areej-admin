@@ -9,6 +9,7 @@ const ALLOWED = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
+  "image/avif": "avif",
 };
 
 export async function POST(request) {
@@ -30,8 +31,9 @@ export async function POST(request) {
       );
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: "حجم الصورة أكبر من 5 ميغابايت" }, { status: 400 });
+    // الضغط يتم في المتصفح قبل الرفع؛ هذا الحد شبكة أمان لا أكثر
+    if (file.size > 8 * 1024 * 1024) {
+      return NextResponse.json({ error: "حجم الصورة أكبر من 8 ميغابايت" }, { status: 400 });
     }
 
     const fileName = `${Date.now()}-${crypto.randomBytes(4).toString("hex")}.${ext}`;

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BANNER_PLACEMENTS, BANNER_RATIOS, getRatioCss } from "../lib/banners.js";
+import ImageUploader from "./ImageUploader.jsx";
 
 const C = { navy: "#0C1C77", line: "#E1ECE8", slate: "#5C6B72" };
 
@@ -25,20 +26,6 @@ export default function BannerForm({ initial, bannerId }) {
   const set = (key) => (e) => {
     const val = e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setForm((f) => ({ ...f, [key]: val }));
-  };
-
-  const uploadImage = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    setError("");
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    setUploading(false);
-    if (!res.ok) { setError(data.error || "فشل رفع الصورة"); return; }
-    setForm((f) => ({ ...f, imageUrl: data.url }));
   };
 
   const submit = async (e) => {
@@ -69,15 +56,15 @@ export default function BannerForm({ initial, bannerId }) {
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4 max-w-xl">
+    <form onSubmit={submit} className="flex flex-col gap-4 w-full max-w-xl">
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>عنوان البنر</label>
-        <input value={form.title} onChange={set("title")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        <input value={form.title} onChange={set("title")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
       </div>
 
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>نص فرعي (اختياري)</label>
-        <input value={form.subtitle || ""} onChange={set("subtitle")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        <input value={form.subtitle || ""} onChange={set("subtitle")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
       </div>
 
       <div>
@@ -104,52 +91,17 @@ export default function BannerForm({ initial, bannerId }) {
       </div>
       )}
 
-      <div>
-        <label className="text-xs font-bold" style={{ color: C.navy }}>صورة البنر</label>
-        <div className="flex items-center gap-3 mt-1">
-          {form.imageUrl && <img src={form.imageUrl} alt="" className="w-24 h-14 rounded-lg object-cover" style={{ border: `1px solid ${C.line}` }} />}
-          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadImage} className="text-sm" />
-        </div>
-        {uploading && <p className="text-xs mt-1" style={{ color: C.slate }}>جاري رفع الصورة...</p>}
-        <p className="text-xs mt-1" style={{ color: C.slate }}>بدون صورة، سيظهر البنر بتدرج لوني بسيط بدلها.</p>
-      </div>
+      <ImageUploader
+        value={form.imageUrl}
+        onChange={(url) => setForm((f) => ({ ...f, imageUrl: url }))}
+        preset="banner"
+        label="صورة البنر"
+      />
 
-      <div>
-        <label className="text-xs font-bold" style={{ color: C.navy }}>مقاس عرض البنر</label>
-        <select value={form.ratio || "auto"} onChange={set("ratio")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none bg-white" style={{ border: `1.5px solid ${C.line}` }}>
-          {BANNER_RATIOS.map((r) => (
-            <option key={r.key} value={r.key}>{r.label} — {r.note}</option>
-          ))}
-        </select>
-        <p className="text-xs mt-1" style={{ color: C.slate }}>
-          {form.ratio === "auto" || !form.ratio
-            ? "الصورة تظهر كاملة بأبعادها الأصلية بلا أي قص — الأنسب للتصاميم الجاهزة."
-            : "سيُقصّ الفائض من الصورة لتناسب النسبة المختارة. اجعل المحتوى المهم في وسط الصورة."}
-        </p>
-
-        {form.imageUrl && (
-          <div className="mt-3">
-            <p className="text-xs font-bold mb-1.5" style={{ color: C.navy }}>معاينة كما ستظهر للزائر</p>
-            <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${C.line}`, background: "#071233" }}>
-              <img
-                src={form.imageUrl}
-                alt="معاينة"
-                className="w-full block"
-                style={
-                  getRatioCss(form.ratio)
-                    ? { aspectRatio: getRatioCss(form.ratio), objectFit: "cover", objectPosition: "center" }
-                    : { height: "auto", objectFit: "contain" }
-                }
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>نص زر البنر (اختياري)</label>
-          <input value={form.ctaLabel || ""} onChange={set("ctaLabel")} placeholder="مثال: تسوّق العرض" className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+          <input value={form.ctaLabel || ""} onChange={set("ctaLabel")} placeholder="مثال: تسوّق العرض" className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
         </div>
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>رابط الزر</label>
@@ -157,10 +109,10 @@ export default function BannerForm({ initial, bannerId }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>ترتيب الظهور</label>
-          <input type="number" value={form.sortOrder ?? 0} onChange={set("sortOrder")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+          <input type="number" value={form.sortOrder ?? 0} onChange={set("sortOrder")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
         </div>
         <label className="flex items-center gap-2 text-sm font-bold mt-6" style={{ color: C.navy }}>
           <input type="checkbox" checked={form.active !== false} onChange={set("active")} /> نشط (يظهر للزوار)

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import ImageUploader from "./ImageUploader.jsx";
 
 const C = { navy: "#0C1C77", line: "#E1ECE8", slate: "#5C6B72" };
 
@@ -29,20 +30,6 @@ export default function CategoryForm({ initial, categoryId }) {
     setForm((f) => ({ ...f, name, slug: categoryId ? f.slug : slugify(name) }));
   };
 
-  const uploadImage = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    setError("");
-    const fd = new FormData();
-    fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    setUploading(false);
-    if (!res.ok) { setError(data.error || "فشل رفع الصورة"); return; }
-    setForm((f) => ({ ...f, bannerUrl: data.url }));
-  };
-
   const submit = async (e) => {
     e.preventDefault();
     setError("");
@@ -69,25 +56,25 @@ export default function CategoryForm({ initial, categoryId }) {
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4 max-w-xl">
+    <form onSubmit={submit} className="flex flex-col gap-4 w-full max-w-xl">
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>اسم التصنيف</label>
-        <input value={form.name} onChange={onNameChange} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        <input value={form.name} onChange={onNameChange} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
       </div>
 
       {!categoryId && (
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>المعرّف بالإنجليزي (slug) — يُستخدم في رابط الصفحة</label>
-          <input value={form.slug} onChange={set("slug")} dir="ltr" className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+          <input value={form.slug} onChange={set("slug")} dir="ltr" className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
         </div>
       )}
 
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>وصف قصير (يظهر أسفل اسم التصنيف)</label>
-        <input value={form.tagline || ""} onChange={set("tagline")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        <input value={form.tagline || ""} onChange={set("tagline")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         <div>
           <label className="text-xs font-bold" style={{ color: C.navy }}>اللون</label>
           <input type="color" value={form.color} onChange={set("color")} className="w-full mt-1 h-11 rounded-xl" style={{ border: `1.5px solid ${C.line}` }} />
@@ -100,18 +87,16 @@ export default function CategoryForm({ initial, categoryId }) {
         </div>
       </div>
 
-      <div>
-        <label className="text-xs font-bold" style={{ color: C.navy }}>بنر التصنيف (اختياري — يظهر أعلى صفحة هذا التصنيف)</label>
-        <div className="flex items-center gap-3 mt-1">
-          {form.bannerUrl && <img src={form.bannerUrl} alt="" className="w-20 h-12 rounded-lg object-cover" style={{ border: `1px solid ${C.line}` }} />}
-          <input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadImage} className="text-sm" />
-        </div>
-        {uploading && <p className="text-xs mt-1" style={{ color: C.slate }}>جاري رفع الصورة...</p>}
-      </div>
+      <ImageUploader
+        value={form.bannerUrl}
+        onChange={(url) => setForm((f) => ({ ...f, bannerUrl: url }))}
+        preset="banner"
+        label="بنر التصنيف (اختياري — يظهر أعلى صفحة هذا التصنيف)"
+      />
 
       <div>
         <label className="text-xs font-bold" style={{ color: C.navy }}>ترتيب الظهور (رقم أصغر = أول)</label>
-        <input type="number" value={form.sortOrder ?? 0} onChange={set("sortOrder")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none" style={{ border: `1.5px solid ${C.line}` }} />
+        <input type="number" value={form.sortOrder ?? 0} onChange={set("sortOrder")} className="w-full mt-1 px-4 py-2.5 rounded-xl text-sm outline-none min-w-0" style={{ border: `1.5px solid ${C.line}` }} />
       </div>
 
       {error && <p className="text-sm" style={{ color: "#c05050" }}>{error}</p>}

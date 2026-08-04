@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Plus, Pencil, Trash2, EyeOff } from "lucide-react";
+import VisibilityToggle from "../../../components/VisibilityToggle.jsx";
 
 const C = { navy: "#0C1C77", teal: "#00C6C7", line: "#E1ECE8", slate: "#5C6B72" };
 
@@ -52,7 +53,13 @@ export default function AdminBannersPage() {
                 <div className="min-w-0">
                   <p className="font-bold text-sm truncate flex items-center gap-2" style={{ color: "#0B1220" }}>
                     {b.title}
-                    {!b.active && <EyeOff size={13} color={C.slate} />}
+                    <VisibilityToggle
+                      id={b.id}
+                      visible={b.active !== false}
+                      endpoint="/api/banners"
+                      field="active"
+                      labels={{ shown: "نشط", hidden: "متوقف" }}
+                    />
                   </p>
                   <p className="text-xs truncate" style={{ color: C.slate }}>
                     {b.placement === "home" ? "الصفحة الرئيسية" : "صفحة تصنيف"} {b.subtitle ? `— ${b.subtitle}` : ""}

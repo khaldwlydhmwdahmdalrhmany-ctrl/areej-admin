@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { getProducts, getBanners, getCategories } from "../../../lib/db.js";
 import { C, discountPercent, formatPrice } from "../../../lib/colors.js";
+import { isOfferProduct } from "../../../lib/badges.js";
 import { pickBanner } from "../../../lib/banners.js";
 import PageHero from "../../../components/site/PageHero.jsx";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
@@ -23,13 +24,19 @@ export default async function OffersPage() {
 
   const pageBanner = pickBanner(offerBanners);
 
-  const onSale = products.filter((p) => discountPercent(p.price, p.oldPrice) > 0);
+  // العروض = خصم سعري فعلي، أو شارة ترويجية اختارها المسؤول من لوحة التحكم
+  // (بعض العروض حزم أو هدايا لا تخفيضات، فلا يكفي فرق السعر وحده)
+  const onSale = products
+    .filter(isOfferProduct)
+    .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
 
   // صفقة الصدارة = أكبر توفير بالريال، لا أعلى نسبة.
   // خصم 50% على 100 ريال يوفّر 50؛ خصم 20% على 2000 يوفّر 400.
-  const spotlight = [...onSale].sort(
-    (a, b) => (b.oldPrice - b.price) - (a.oldPrice - a.price)
-  )[0];
+  // الأولوية لما ثبّته المسؤول يدويًا، وإلا أكبر توفير بالريال
+  const pinned = onSale.find((p) => p.featuredOffer);
+  const spotlight = pinned || [...onSale]
+    .filter((p) => p.oldPrice > p.price)
+    .sort((a, b) => (b.oldPrice - b.price) - (a.oldPrice - a.price))[0] || onSale[0];
 
   const rest = onSale.filter((p) => p.id !== spotlight?.id);
 
@@ -38,7 +45,7 @@ export default async function OffersPage() {
     { key: "big",  label: "توفير 500 ر.س فأكثر", test: (p) => p.oldPrice - p.price >= 500 },
     { key: "mid",  label: "توفير 100 – 499 ر.س", test: (p) => { const s = p.oldPrice - p.price; return s >= 100 && s < 500; } },
     { key: "small",label: "توفير أقل من 100 ر.س", test: (p) => p.oldPrice - p.price < 100 },
-  ].map((t) => ({ ...t, items: rest.filter(t.test) })).filter((t) => t.items.length > 0);
+  ].map((t) => ({ ...t, items: rest.filter((p) => p.oldPrice > p.price && t.test(p)) })).filter((t) => t.items.length > 0);
 
   return (
     <div>
@@ -71,7 +78,7 @@ export default async function OffersPage() {
         <>
           {/* ملخّص التوفير — أرقام محسوبة لا مكتوبة */}
           <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16">
-            <SavingsSummary products={onSale} />
+            <SavingsSummary products={onSale.filter((p) => p.oldPrice > p.price)} />
           </section>
 
           {/* صفقة الصدارة */}

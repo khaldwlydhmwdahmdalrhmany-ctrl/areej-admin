@@ -7,7 +7,7 @@ import { TrendingDown, Package, Percent } from "lucide-react";
  * لا أرقام تسويقية مكتوبة يدويًا. تتغيّر تلقائيًا مع كل تعديل على الأسعار.
  */
 export default function SavingsSummary({ products }) {
-  if (!products?.length) return null;
+  if (!products?.length) return null;   // لا عروض سعرية — نخفي الملخّص بدل عرض أصفار
 
   const totalSaving = products.reduce((s, p) => s + (p.oldPrice - p.price), 0);
   const biggestPct = Math.max(...products.map((p) => Math.round(100 - (p.price / p.oldPrice) * 100)));

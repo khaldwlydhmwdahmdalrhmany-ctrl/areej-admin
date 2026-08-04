@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Save, Check, Loader2, ExternalLink } from "lucide-react";
-import { SOCIAL_LINKS, CONTACT_SETTINGS } from "../lib/settings.js";
+import { SOCIAL_LINKS, CONTACT_SETTINGS, STORE_SETTINGS } from "../lib/settings.js";
 import { ANALYTICS_SETTINGS, validateAnalyticsId } from "../lib/analytics.js";
 import { getIcon } from "../lib/iconMap.js";
 
@@ -43,6 +43,23 @@ export default function SettingsForm({ initial = {} }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* إعدادات المتجر */}
+      <section className="p-5 sm:p-6 rounded-2xl" style={{ background: "#fff", border: `1px solid ${C.line}` }}>
+        <h2 className="font-bold text-sm mb-1" style={{ color: C.navy }}>إعدادات المتجر</h2>
+        <p className="text-xs mb-5" style={{ color: C.slate }}>
+          نصوص وأرقام كانت ثابتة في الكود — صارت تحت تحكمك.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {STORE_SETTINGS.map((c) => (
+            <div key={c.key} className={c.key === "store_ticker" || c.key === "announcement" ? "sm:col-span-2" : ""}>
+              <label className="text-xs font-bold block mb-1.5" style={{ color: C.navy }}>{c.label}</label>
+              <input value={form[c.key] || ""} onChange={set(c.key)} placeholder={c.placeholder} className={field} style={fStyle} />
+              {c.note && <p className="text-[11px] mt-1.5 leading-relaxed" style={{ color: C.slate }}>{c.note}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* روابط التواصل */}
       <section className="p-5 sm:p-6 rounded-2xl" style={{ background: "#fff", border: `1px solid ${C.line}` }}>
         <h2 className="font-bold text-sm mb-1" style={{ color: C.navy }}>روابط التواصل الاجتماعي</h2>

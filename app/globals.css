@@ -196,3 +196,27 @@ a:hover > .arrow-slide { transform: translateX(-4px); }
   to   { transform: scale(3); opacity: 0; }
 }
 .ripple { animation: rippleOut .6s ease-out forwards; }
+
+/* ============================================================
+   منع التمرير الأفقي — سببه غالبًا عنصر واحد أعرض من الشاشة،
+   والنتيجة أن الصفحة كلها تنزلق يمينًا ويسارًا بلا داعٍ.
+   ============================================================ */
+
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* الوسائط لا تتجاوز حاويتها أبدًا */
+img, video, svg, canvas, iframe { max-width: 100%; height: auto; }
+
+/* الحقول ترث الخط ولا تتمدد خارج الحاوية */
+input, select, textarea, button {
+  font-family: inherit;
+  max-width: 100%;
+}
+
+/* منع تكبير iOS التلقائي عند التركيز — يحدث تحت 16 بكسل */
+@media (max-width: 640px) {
+  input, select, textarea { font-size: 16px !important; }
+}
+
+/* الكلمات الطويلة (روابط، معرّفات) تنكسر بدل توسيع الصفحة */
+.break-anywhere { overflow-wrap: anywhere; word-break: break-word; }

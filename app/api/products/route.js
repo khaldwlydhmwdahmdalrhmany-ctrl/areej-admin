@@ -4,7 +4,9 @@ import { getProducts, createProduct } from "../../../lib/db.js";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const categorySlug = searchParams.get("category");
-  const products = await getProducts({ categorySlug: categorySlug || undefined });
+  // ?all=1 تستخدمه لوحة التحكم فقط لعرض المنتجات المخفية أيضًا
+  const includeHidden = searchParams.get("all") === "1";
+  const products = await getProducts({ categorySlug: categorySlug || undefined, includeHidden });
   return NextResponse.json(products);
 }
 
