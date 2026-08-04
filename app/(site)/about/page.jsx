@@ -1,14 +1,12 @@
 import React from "react";
 import { Droplet, Target, Eye, HeartHandshake, ShieldCheck, Wrench, Recycle } from "lucide-react";
-import { getBanners } from "../../../lib/db.js";
+import { getBanners } from "../../../lib/queries.js";
 import { pickBanner } from "../../../lib/banners.js";
 import { C, G, SH } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import SectionHead from "../../../components/site/SectionHead.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
-
-export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "نبذة عن الشركة",

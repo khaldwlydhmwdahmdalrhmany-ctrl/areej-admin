@@ -18,7 +18,7 @@ function BannerSlide({ banner, fit = "cover" }) {
           alt={banner.title}
           className="w-full h-full"
           style={{ objectFit: fit, objectPosition: "center" }}
-        />
+        loading="lazy" decoding="async" />
       </Link>
     );
   }

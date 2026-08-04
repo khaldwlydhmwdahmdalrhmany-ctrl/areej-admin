@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Menu, ShoppingCart, ChevronDown } from "lucide-react";
 import { C } from "../../lib/colors.js";
 import { getIcon } from "../../lib/iconMap.js";
-import PetalLogo from "./PetalLogo.jsx";
+import StoreLogo from "./StoreLogo.jsx";
 import { useCart } from "../../context/CartContext.jsx";
 
 const NAV_LINKS = [
@@ -17,7 +17,7 @@ const NAV_LINKS = [
   { to: "/contact", label: "تواصل معنا" },
 ];
 
-export default function Header({ categories }) {
+export default function Header({ categories, settings = {} }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const { cartCount, setCartOpen } = useCart();
@@ -26,11 +26,8 @@ export default function Header({ categories }) {
     <header className="sticky top-0 z-40 border-b" style={{ background: `${C.pearl}F5`, backdropFilter: "blur(8px)", borderColor: C.line }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <PetalLogo size={34} />
-          <div className="flex flex-col leading-none">
-            <span className="font-display text-lg" style={{ color: C.navy }}>أريج النقاء</span>
-            <span className="text-[10px] font-medium" style={{ color: C.slate }}>لتحلية المياه</span>
-          </div>
+
+          <StoreLogo settings={settings} size={34} />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-6 text-sm">

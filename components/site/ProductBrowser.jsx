@@ -7,6 +7,13 @@ import { getIcon } from "../../lib/iconMap.js";
 import ProductCard from "./ProductCard.jsx";
 import { STOCK_LABELS } from "./StockBadge.jsx";
 
+/**
+ * عدد المنتجات في الدفعة الواحدة.
+ * عرض 500 منتج دفعة واحدة يعني 500 عقدة DOM و500 طلب صورة —
+ * يُجمّد الجوال. نعرض 24 ثم نزيد عند الطلب.
+ */
+const PAGE_SIZE = 24;
+
 const SORTS = [
   { key: "relevant", label: "الأكثر ملاءمة" },
   { key: "price_asc", label: "السعر: من الأقل" },
@@ -32,6 +39,7 @@ export default function ProductBrowser({ categories, products, activeCatSlug }) 
   const [stocks, setStocks] = useState([]);
   const [maxPrice, setMaxPrice] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [limit, setLimit] = useState(PAGE_SIZE);
 
   // نطاق السعر مشتق من المنتجات المعروضة فعلًا
   const priceBounds = useMemo(() => {
@@ -74,6 +82,9 @@ export default function ProductBrowser({ categories, products, activeCatSlug }) 
     if (sorters[sort]) out = [...out].sort(sorters[sort]);
     return out;
   }, [products, query, brands, stocks, ceiling, sort]);
+
+  // أي تغيير في البحث أو الفلاتر يعيدنا لأول دفعة
+  React.useEffect(() => { setLimit(PAGE_SIZE); }, [query, brands, stocks, maxPrice, sort]);
 
   const toggle = (list, setList, val) =>
     setList(list.includes(val) ? list.filter((v) => v !== val) : [...list, val]);
@@ -267,9 +278,27 @@ export default function ProductBrowser({ categories, products, activeCatSlug }) 
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {filtered.map((p) => (<ProductCard key={p.id} product={p} />))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {filtered.slice(0, limit).map((p) => (<ProductCard key={p.id} product={p} />))}
+          </div>
+
+          {filtered.length > limit && (
+            <div className="flex flex-col items-center gap-3 mt-10">
+              <div className="w-full max-w-xs h-1 rounded-full overflow-hidden" style={{ background: C.line }}>
+                <div className="h-full rounded-full transition-all duration-500"
+                     style={{ width: `${(limit / filtered.length) * 100}%`, background: C.teal }} />
+              </div>
+              <span className="text-xs" style={{ color: C.slate }}>
+                عرض {Math.min(limit, filtered.length)} من {filtered.length}
+              </span>
+              <button onClick={() => setLimit((l) => l + PAGE_SIZE)}
+                      className="btn px-7 py-3 text-sm" style={{ background: C.navy, color: "#fff" }}>
+                عرض المزيد
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

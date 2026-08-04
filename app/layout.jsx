@@ -1,25 +1,46 @@
 import "./globals.css";
-import { getSettings } from "../lib/db.js";
+import { getSettings } from "../lib/queries.js";
 import AnalyticsScripts, { GtmNoScript } from "../components/site/AnalyticsScripts.jsx";
+import { organizationSchema, websiteSchema, JsonLd, siteUrl } from "../lib/seo.jsx";
 
-export const metadata = {
-  metadataBase: new URL("https://areej-alnaqaa-admin.vercel.app"),
-  title: {
-    default: "أريج النقاء المتميز لتحلية المياه",
-    template: "%s | أريج النقاء",
-  },
-  description:
-    "متجر أريج النقاء لأجهزة تحلية وتنقية المياه، البرادات، الفلاتر، ومحطات التحلية في المملكة العربية السعودية — مع ضمان حتى 3 سنوات وتركيب معتمد.",
-  keywords: ["تحلية المياه", "فلاتر مياه", "أجهزة تنقية", "محطات تحلية", "السعودية"],
-  openGraph: {
-    type: "website",
-    locale: "ar_SA",
-    siteName: "أريج النقاء المتميز لتحلية المياه",
-    title: "أريج النقاء المتميز لتحلية المياه",
-    description: "أجهزة تحلية وتنقية مياه، برادات، فلاتر، ومحطات تحلية — بضمان وتركيب معتمد.",
-  },
-  robots: { index: true, follow: true },
-};
+/** العنوان والوصف والأيقونة — كلها من لوحة التحكم مع قيم افتراضية. */
+export async function generateMetadata() {
+  const s = await getSettings().catch(() => ({}));
+  const name = (s.store_name || "أريج النقاء المتميز لتحلية المياه").trim();
+  const short = (s.store_short_name || "أريج النقاء").trim();
+  const desc = (s.store_description ||
+    "متجر أريج النقاء لأجهزة تحلية وتنقية المياه، البرادات، الفلاتر، ومحطات التحلية في المملكة العربية السعودية — مع ضمان حتى 3 سنوات وتركيب معتمد.").trim();
+  const ogImage = (s.store_og_image || "").trim();
+  const favicon = (s.store_favicon || "").trim();
+
+  return {
+    metadataBase: new URL(siteUrl()),
+    title: { default: name, template: `%s | ${short}` },
+    description: desc,
+    keywords: ["تحلية المياه", "فلاتر مياه", "أجهزة تنقية", "محطات تحلية", "السعودية"],
+    ...(favicon ? { icons: { icon: favicon, apple: favicon } } : {}),
+    alternates: { canonical: "/" },
+    openGraph: {
+      type: "website",
+      locale: "ar_SA",
+      siteName: name,
+      title: name,
+      description: desc,
+      url: siteUrl(),
+      ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: name }] } : {}),
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title: name,
+      description: desc,
+      ...(ogImage ? { images: [ogImage] } : {}),
+    },
+    robots: {
+      index: true, follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+    },
+  };
+}
 
 export const viewport = {
   themeColor: "#0C1C77",
@@ -50,6 +71,8 @@ export default async function RootLayout({ children }) {
       <body>
         <GtmNoScript settings={settings} />
         <AnalyticsScripts settings={settings} />
+        <JsonLd data={organizationSchema(settings)} />
+        <JsonLd data={websiteSchema()} />
         {children}
       </body>
     </html>

@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Phone, MapPin, MessageCircle, Mail, Clock } from "lucide-react";
 import { C } from "../../lib/colors.js";
-import PetalLogo from "./PetalLogo.jsx";
+import StoreLogo from "./StoreLogo.jsx";
 import SocialLinks from "./SocialLinks.jsx";
 
 export default function Footer({ settings = {} }) {
@@ -17,12 +17,8 @@ export default function Footer({ settings = {} }) {
     <footer style={{ background: C.navyDeep, color: C.pearl }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <PetalLogo size={28} />
-            <div className="flex flex-col leading-none">
-              <span className="font-display">أريج النقاء</span>
-              <span className="text-[10px]" style={{ color: `${C.pearl}80` }}>المتميز لتحلية المياه</span>
-            </div>
+          <div className="mb-3">
+            <StoreLogo settings={settings} size={28} dark />
           </div>
           <p className="text-sm mb-5" style={{ color: dim }}>
             وجهتك لأجهزة تحلية وتنقية المياه والبرادات ومحطات التحلية بالمملكة.

@@ -36,7 +36,7 @@ export default function CartDrawer() {
                     <div key={i.id} className="flex gap-3 items-center">
                       <div className="w-16 h-16 rounded-xl overflow-hidden flex items-center justify-center shrink-0" style={{ background: i.product.imageUrl ? C.offWhite : `${i.product.category?.color || C.navy}15` }}>
                         {i.product.imageUrl ? (
-                          <img src={i.product.imageUrl} alt={i.product.name} className="w-full h-full object-cover" />
+                          <img src={i.product.imageUrl} alt={i.product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                         ) : (
                           <Icon size={22} color={i.product.category?.color || C.navy} />
                         )}

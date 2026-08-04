@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Wrench, CheckCircle2, AlertTriangle } from "lucide-react";
 import { C } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
-import { getBanners } from "../../../lib/db.js";
+import { getBanners } from "../../../lib/queries.js";
 import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
@@ -17,8 +17,6 @@ const PLANS = [
   { id: "commercial", name: "باقة تجارية", freq: "حسب الاتفاق", price: null,
     items: ["مناسبة لمحطات ومنشآت", "عقد صيانة دوري مخصص", "أولوية في الزيارات الطارئة"] },
 ];
-
-export const dynamic = "force-dynamic";
 
 export default async function MaintenancePage() {
   const pageBanner = pickBanner(await getBanners({ placement: "maintenance" }));

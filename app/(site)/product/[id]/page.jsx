@@ -2,13 +2,17 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ShieldCheck, Truck, Wrench, Wallet, ChevronLeft } from "lucide-react";
-import { getProductById, getProducts } from "../../../../lib/db.js";
+import { getProductById, getProducts } from "../../../../lib/queries.js";
 import { C, SH, formatPrice, discountPercent } from "../../../../lib/colors.js";
 import ProductVisual from "../../../../components/site/ProductVisual.jsx";
 import ProductCard from "../../../../components/site/ProductCard.jsx";
 import InstallmentBadge from "../../../../components/site/InstallmentBadge.jsx";
 import ProductActions from "../../../../components/site/ProductActions.jsx";
 import ProductViewTracker from "../../../../components/site/ProductViewTracker.jsx";
+import {
+  productMetadata, productSchema, breadcrumbSchema, faqSchema,
+  productImageAlt, JsonLd,
+} from "../../../../lib/seo.jsx";
 import Rating from "../../../../components/site/Rating.jsx";
 import StockBadge from "../../../../components/site/StockBadge.jsx";
 import ProductTabs from "../../../../components/site/ProductTabs.jsx";
@@ -18,14 +22,19 @@ import TrustStrip from "../../../../components/site/TrustStrip.jsx";
 import FaqAccordion from "../../../../components/site/FaqAccordion.jsx";
 import CtaBand from "../../../../components/site/CtaBand.jsx";
 
-export const dynamic = "force-dynamic";
-
 const PRODUCT_FAQS = [
   { q: "هل السعر شامل التركيب؟", a: "التركيب مجاني على المنتجات التي تحمل شارة «تركيب مجاني». لغيرها يُحدَّد رسم رمزي حسب المدينة، ونخبرك به قبل التأكيد." },
   { q: "كم مدة التوصيل؟", a: "من 2 إلى 5 أيام عمل حسب المدينة، وغالبًا خلال 48 ساعة داخل الرياض وجدة والدمام." },
   { q: "ماذا لو لم يناسبني المنتج؟", a: "يمكنك طلب الاسترجاع خلال المدة النظامية ما دام المنتج بحالته الأصلية ولم يُركَّب." },
   { q: "هل تتوفر قطع الغيار لاحقًا؟", a: "نعم، نوفّر شمعات وأغشية أصلية لكل جهاز نبيعه، ويمكنك طلبها من قسم «الفلاتر» أو عبر واتساب." },
 ];
+
+/** عنوان ووصف وبطاقة مشاركة — تُشتق تلقائيًا من بيانات المنتج. */
+export async function generateMetadata({ params }) {
+  const product = await getProductById(params.id);
+  if (!product) return { title: "المنتج غير موجود" };
+  return productMetadata(product);
+}
 
 export default async function ProductPage({ params }) {
   const product = await getProductById(params.id);
@@ -48,6 +57,16 @@ export default async function ProductPage({ params }) {
   return (
     <div>
       <ProductViewTracker product={product} />
+
+      {/* بيانات منظّمة — تُمكّن جوجل من عرض السعر والتوفّر في نتائج البحث */}
+      <JsonLd data={productSchema(product)} />
+      <JsonLd data={breadcrumbSchema([
+        { name: "الرئيسية", url: "/" },
+        { name: "المنتجات", url: "/shop" },
+        { name: product.category?.name, url: `/category/${product.category?.slug}` },
+        { name: product.name, url: `/product/${product.id}` },
+      ])} />
+      <JsonLd data={faqSchema(PRODUCT_FAQS)} />
 
       {/* مسار التنقل */}
       <nav aria-label="مسار التنقل" className="max-w-6xl mx-auto px-4 sm:px-6 py-5 text-xs flex items-center gap-1 flex-wrap" style={{ color: C.slateLight }}>

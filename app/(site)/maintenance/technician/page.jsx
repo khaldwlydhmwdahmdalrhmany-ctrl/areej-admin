@@ -1,6 +1,6 @@
 import React from "react";
 import { Clock, ShieldCheck, Wrench, MapPin, Wallet } from "lucide-react";
-import { getBanners } from "../../../../lib/db.js";
+import { getBanners } from "../../../../lib/queries.js";
 import { pickBanner } from "../../../../lib/banners.js";
 import { C, SH } from "../../../../lib/colors.js";
 import PageHero from "../../../../components/site/PageHero.jsx";
@@ -8,8 +8,6 @@ import TrustStrip from "../../../../components/site/TrustStrip.jsx";
 import TechnicianForm from "../../../../components/site/TechnicianForm.jsx";
 import SectionHead from "../../../../components/site/SectionHead.jsx";
 import FaqAccordion from "../../../../components/site/FaqAccordion.jsx";
-
-export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "طلب فني صيانة",

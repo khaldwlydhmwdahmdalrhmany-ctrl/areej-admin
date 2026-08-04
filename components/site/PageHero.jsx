@@ -65,7 +65,7 @@ export default function PageHero({
             alt={title}
             className="w-full h-auto block"
             style={{ maxHeight: "82vh", objectFit: "contain", margin: "0 auto" }}
-          />
+          loading="lazy" decoding="async" />
         </div>
 
         {(title || subtitle || actions) && (
@@ -101,7 +101,7 @@ export default function PageHero({
       {hasImage && (
         <>
           <img src={imageUrl} alt="" aria-hidden="true"
-               className="absolute inset-0 w-full h-full object-cover object-center" />
+               className="absolute inset-0 w-full h-full object-cover object-center" loading="lazy" decoding="async" />
           <span className="absolute inset-0"
                 style={{ background: "linear-gradient(90deg, rgba(7,18,51,.92) 0%, rgba(7,18,51,.7) 45%, rgba(7,18,51,.3) 100%)" }} />
         </>

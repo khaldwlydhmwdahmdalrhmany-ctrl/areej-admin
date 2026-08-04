@@ -1,14 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { Phone, Clock, MapPin, ShieldCheck, Wrench, MessageCircle, ArrowLeft } from "lucide-react";
-import { getBanners } from "../../../../lib/db.js";
+import { getBanners } from "../../../../lib/queries.js";
 import { pickBanner } from "../../../../lib/banners.js";
 import { C, SH, WHATSAPP_NUMBER, buildWhatsAppLink } from "../../../../lib/colors.js";
 import PageHero from "../../../../components/site/PageHero.jsx";
 import UrgentForm from "../../../../components/site/UrgentForm.jsx";
 import SectionHead from "../../../../components/site/SectionHead.jsx";
-
-export const dynamic = "force-dynamic";
 
 const PROMISES = [
   { icon: Clock, t: "رد خلال دقائق", d: "فريق الطوارئ يتابع واتساب طوال أوقات العمل." },

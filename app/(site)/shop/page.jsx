@@ -1,13 +1,11 @@
 import React from "react";
-import { getBanners, getCategories, getProducts } from "../../../lib/db.js";
+import { getBanners, getCategories, getProducts } from "../../../lib/queries.js";
 import { C } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
 import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import ProductBrowser from "../../../components/site/ProductBrowser.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
-
-export const dynamic = "force-dynamic";
 
 export default async function ShopPage() {
   const pageBanner = pickBanner(await getBanners({ placement: "shop" }));

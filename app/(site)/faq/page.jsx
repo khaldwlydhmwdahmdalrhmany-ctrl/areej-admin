@@ -1,13 +1,11 @@
 import React from "react";
 import { C } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
-import { getBanners } from "../../../lib/db.js";
+import { getBanners } from "../../../lib/queries.js";
 import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import FaqAccordion from "../../../components/site/FaqAccordion.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
-
-export const dynamic = "force-dynamic";
 
 const FAQS = [
   { q: "كم تستغرق مدة التوصيل؟", a: "عادةً من 2 إلى 5 أيام عمل حسب المدينة، والطلبات داخل الرياض وجدة والدمام تصل غالبًا خلال 48 ساعة." },

@@ -1,14 +1,13 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getCategories, getProducts, getCategoryBySlug, getBanners } from "../../../../lib/db.js";
+import { getCategories, getProducts, getCategoryBySlug, getBanners } from "../../../../lib/queries.js";
 import { C } from "../../../../lib/colors.js";
 import { pickBanner } from "../../../../lib/banners.js";
 import PageHero from "../../../../components/site/PageHero.jsx";
 import TrustStrip from "../../../../components/site/TrustStrip.jsx";
 import ProductBrowser from "../../../../components/site/ProductBrowser.jsx";
 import CtaBand from "../../../../components/site/CtaBand.jsx";
-
-export const dynamic = "force-dynamic";
+import { categoryMetadata, itemListSchema, breadcrumbSchema, JsonLd } from "../../../../lib/seo.jsx";
 
 // السلَغ يصل من Next.js مُرمّزًا (percent-encoding) عندما يحتوي حروفًا عربية،
 // لذا نفكّ الترميز قبل أي استعلام على قاعدة البيانات.
@@ -19,6 +18,13 @@ function decodeSlug(raw) {
   } catch {
     return raw; // ترميز تالف — نستخدم القيمة كما هي بدل رمي استثناء
   }
+}
+
+export async function generateMetadata({ params }) {
+  const category = await getCategoryBySlug(decodeSlug(params.slug));
+  if (!category) return { title: "التصنيف غير موجود" };
+  const products = await getProducts({ categorySlug: category.slug });
+  return categoryMetadata(category, products.length);
 }
 
 export default async function CategoryPage({ params }) {
@@ -40,6 +46,13 @@ export default async function CategoryPage({ params }) {
 
   return (
     <div>
+      <JsonLd data={itemListSchema(products, category.name)} />
+      <JsonLd data={breadcrumbSchema([
+        { name: "الرئيسية", url: "/" },
+        { name: "المنتجات", url: "/shop" },
+        { name: category.name, url: `/category/${category.slug}` },
+      ])} />
+
       <PageHero
         title={category.name}
         subtitle={category.tagline}

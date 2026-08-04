@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Star, ArrowLeft, Wrench, CalendarCheck, ShieldCheck } from "lucide-react";
-import { getCategories, getProducts, getBanners } from "../../lib/db.js";
+import { getCategories, getProducts, getBanners } from "../../lib/queries.js";
 import { C, G, SH, discountPercent } from "../../lib/colors.js";
 import HeroBanners from "../../components/site/HeroBanners.jsx";
 import ProductCard from "../../components/site/ProductCard.jsx";
@@ -13,8 +13,6 @@ import WhyUs from "../../components/site/WhyUs.jsx";
 import FaqAccordion from "../../components/site/FaqAccordion.jsx";
 import CtaBand from "../../components/site/CtaBand.jsx";
 import HowItWorks from "../../components/site/HowItWorks.jsx";
-
-export const dynamic = "force-dynamic";
 
 const TESTIMONIALS = [
   { name: "أم عبدالله", city: "الرياض", text: "جهاز التحلية غيّر طعم مياه المطبخ تمامًا، والتركيب كان سريعًا." },

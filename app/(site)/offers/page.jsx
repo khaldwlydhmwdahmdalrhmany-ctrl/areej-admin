@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { getProducts, getBanners, getCategories } from "../../../lib/db.js";
+import { getProducts, getBanners, getCategories } from "../../../lib/queries.js";
 import { C, discountPercent, formatPrice } from "../../../lib/colors.js";
 import { isOfferProduct } from "../../../lib/badges.js";
 import { pickBanner } from "../../../lib/banners.js";
@@ -12,8 +12,6 @@ import SectionHead from "../../../components/site/SectionHead.jsx";
 import OfferSpotlight from "../../../components/site/OfferSpotlight.jsx";
 import SavingsSummary from "../../../components/site/SavingsSummary.jsx";
 import CtaBand from "../../../components/site/CtaBand.jsx";
-
-export const dynamic = "force-dynamic";
 
 export default async function OffersPage() {
   const [products, categories, offerBanners] = await Promise.all([

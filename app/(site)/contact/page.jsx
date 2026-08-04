@@ -2,14 +2,12 @@ import React from "react";
 import { Phone, MapPin, Clock, MessageCircle, Mail } from "lucide-react";
 import { C, SH, WHATSAPP_NUMBER, buildWhatsAppLink } from "../../../lib/colors.js";
 import PageHero from "../../../components/site/PageHero.jsx";
-import { getBanners, getSettings } from "../../../lib/db.js";
+import { getBanners, getSettings } from "../../../lib/queries.js";
 import { pickBanner } from "../../../lib/banners.js";
 import TrustStrip from "../../../components/site/TrustStrip.jsx";
 import ContactForm from "../../../components/site/ContactForm.jsx";
 import SectionHead from "../../../components/site/SectionHead.jsx";
 import FaqAccordion from "../../../components/site/FaqAccordion.jsx";
-
-export const dynamic = "force-dynamic";
 
 
 
